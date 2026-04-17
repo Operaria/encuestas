@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta Operaria</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0A1428; color: #F5F5F0; min-height: 100vh; }
+.container { max-width: 480px; margin: 0 auto; padding: 20px; }
+.header { text-align: center; padding: 30px 0 20px; }
+.header h1 { font-size: 1.4em; font-weight: 600; color: #4A9B93; }
+.header p { font-size: 0.85em; color: #8899AA; margin-top: 8px; }
+.progress { width: 100%; height: 4px; background: #1A2F52; border-radius: 2px; margin: 20px 0; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #1B4D4A, #4A9B93); border-radius: 2px; transition: width 0.4s ease; }
+.step { display: none; animation: fadeIn 0.3s ease; }
+.step.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.question-num { font-size: 0.75em; color: #4A9B93; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.question { font-size: 1.1em; font-weight: 500; margin-bottom: 20px; line-height: 1.4; }
+input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+  width: 100%; padding: 14px 16px; background: #1A2F52; border: 1px solid #2A6B65; border-radius: 12px;
+  color: #F5F5F0; font-size: 1em; outline: none; transition: border-color 0.2s;
+}
+input::placeholder, textarea::placeholder { color: #5A7088; }
+input:focus, textarea:focus, select:focus { border-color: #4A9B93; }
+textarea { min-height: 80px; resize: vertical; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option { padding: 14px 16px; background: #1A2F52; border: 1px solid #2A6B65; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+.option:hover { border-color: #4A9B93; }
+.option.selected { border-color: #4A9B93; background: #1B4D4A; }
+.btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 20px; }
+.btn-next { background: #2A6B65; color: #F5F5F0; }
+.btn-next:hover { background: #4A9B93; }
+.btn-next:disabled { background: #1A2F52; color: #5A7088; cursor: not-allowed; }
+.btn-back { background: transparent; color: #8899AA; border: 1px solid #1A2F52; margin-top: 10px; }
+.btn-back:hover { border-color: #2A6B65; }
+.btn-submit { background: #4A9B93; color: #0F1E3A; font-weight: 700; }
+.btn-submit:hover { background: #2A6B65; color: #F5F5F0; }
+.thanks { text-align: center; padding: 60px 20px; }
+.thanks h2 { font-size: 1.5em; margin-bottom: 12px; color: #4A9B93; }
+.thanks p { color: #8899AA; line-height: 1.5; }
+.field-group { margin-bottom: 16px; }
+.field-label { font-size: 0.85em; color: #8899AA; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Operaria</h1>
+    <p>Queremos conocer tu negocio para ver cómo ayudarte</p>
+  </div>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width: 0%"></div></div>
+
+  <form id="encuestaForm">
+    <div class="step active" data-step="0">
+      <div class="question-num">Antes de empezar</div>
+      <div class="question">Cuéntanos un poco de ti</div>
+      <div class="field-group">
+        <div class="field-label">Tu nombre</div>
+        <input type="text" id="nombre" placeholder="Ej: Carlos Pérez" required>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Tu WhatsApp</div>
+        <input type="tel" id="phone" placeholder="Ej: 56912345678" required>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Tu email (opcional)</div>
+        <input type="email" id="email" placeholder="Ej: carlos@minegocio.cl">
+      </div>
+      <button type="button" class="btn btn-next" onclick="next()">Empezar</button>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="question-num">Pregunta 1 de 12</div>
+      <div class="question">¿Qué tipo de negocio tienes y a qué se dedican?</div>
+      <textarea id="p1" placeholder="Ej: Tengo una barbería de 3 sillas en Providencia"></textarea>
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="question-num">Pregunta 2 de 12</div>
+      <div class="question">¿Los servicios que ofrecen se agendan o algunos son espontáneos?</div>
+      <div class="options" id="p2_options">
+        <div class="option" onclick="selectOption(this, 'p2')">Todos se agendan</div>
+        <div class="option" onclick="selectOption(this, 'p2')">Algunos se agendan, otros son espontáneos</div>
+        <div class="option" onclick="selectOption(this, 'p2')">Todos son espontáneos / sin agenda</div>
+      </div>
+      <input type="hidden" id="p2">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="question-num">Pregunta 3 de 12</div>
+      <div class="question">¿Por qué vía recibes más mensajes o consultas?</div>
+      <div class="options multi" id="p3_options">
+        <div class="option" onclick="toggleOption(this, 'p3')">WhatsApp</div>
+        <div class="option" onclick="toggleOption(this, 'p3')">Instagram</div>
+        <div class="option" onclick="toggleOption(this, 'p3')">Teléfono / Llamadas</div>
+        <div class="option" onclick="toggleOption(this, 'p3')">Presencial</div>
+        <div class="option" onclick="toggleOption(this, 'p3')">Otro</div>
+      </div>
+      <div class="field-label" style="margin-top:8px; font-size:0.75em; color:#5A7088;">Puedes elegir más de una</div>
+      <input type="hidden" id="p3">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="question-num">Pregunta 4 de 12</div>
+      <div class="question">¿Alcanzas siempre a responder los mensajes a tiempo?</div>
+      <div class="options" id="p4_options">
+        <div class="option" onclick="selectOption(this, 'p4')">Sí, siempre respondo rápido</div>
+        <div class="option" onclick="selectOption(this, 'p4')">A veces se me pasan algunos</div>
+        <div class="option" onclick="selectOption(this, 'p4')">No, se me acumulan seguido</div>
+      </div>
+      <input type="hidden" id="p4">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="5">
+      <div class="question-num">Pregunta 5 de 12</div>
+      <div class="question">¿Cómo organizas tu agenda, clientes y pagos?</div>
+      <div class="options" id="p5_options">
+        <div class="option" onclick="selectOption(this, 'p5')">Papel / Cuaderno</div>
+        <div class="option" onclick="selectOption(this, 'p5')">Planilla Excel o Google Sheets</div>
+        <div class="option" onclick="selectOption(this, 'p5')">Algún sistema o app</div>
+        <div class="option" onclick="selectOption(this, 'p5')">De memoria / nada formal</div>
+      </div>
+      <input type="hidden" id="p5">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="6">
+      <div class="question-num">Pregunta 6 de 12</div>
+      <div class="question">¿Hay alguien que te apoye con parte del trabajo?</div>
+      <div class="options" id="p6_options">
+        <div class="option" onclick="selectOption(this, 'p6')">Sí, tengo equipo</div>
+        <div class="option" onclick="selectOption(this, 'p6')">Solo yo</div>
+        <div class="option" onclick="selectOption(this, 'p6')">A veces me ayuda alguien</div>
+      </div>
+      <input type="hidden" id="p6">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="7">
+      <div class="question-num">Pregunta 7 de 12</div>
+      <div class="question">Aproximadamente, ¿cuántos mensajes o consultas recibes en un día normal?</div>
+      <div class="options" id="p7_options">
+        <div class="option" onclick="selectOption(this, 'p7')">Menos de 10</div>
+        <div class="option" onclick="selectOption(this, 'p7')">10 a 30</div>
+        <div class="option" onclick="selectOption(this, 'p7')">30 a 50</div>
+        <div class="option" onclick="selectOption(this, 'p7')">Más de 50</div>
+      </div>
+      <input type="hidden" id="p7">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="8">
+      <div class="question-num">Pregunta 8 de 12</div>
+      <div class="question">¿Qué parte de tu trabajo diario te quita más tiempo o energía?</div>
+      <textarea id="p8" placeholder="Ej: Responder mensajes, confirmar citas, cobrar..."></textarea>
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="9">
+      <div class="question-num">Pregunta 9 de 12</div>
+      <div class="question">¿Pierdes clientes por no responder a tiempo? ¿Cuántos aprox?</div>
+      <div class="options" id="p9_options">
+        <div class="option" onclick="selectOption(this, 'p9')">No pierdo clientes por eso</div>
+        <div class="option" onclick="selectOption(this, 'p9')">Sí, unos pocos al mes</div>
+        <div class="option" onclick="selectOption(this, 'p9')">Sí, varios cada semana</div>
+        <div class="option" onclick="selectOption(this, 'p9')">No sé, pero creo que sí</div>
+      </div>
+      <input type="hidden" id="p9">
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="10">
+      <div class="question-num">Pregunta 10 de 12</div>
+      <div class="question">¿En qué momento tu día se vuelve más ajetreado?</div>
+      <textarea id="p10" placeholder="Ej: En la mañana cuando abro, a la hora de almuerzo..."></textarea>
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="11">
+      <div class="question-num">Pregunta 11 de 12</div>
+      <div class="question">Si pudieras tener un asistente que se encargara de algo por ti, ¿qué le delegarías primero?</div>
+      <textarea id="p11" placeholder="Ej: Responder WhatsApp, agendar citas, cobrar..."></textarea>
+      <button type="button" class="btn btn-next" onclick="next()">Siguiente</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="12">
+      <div class="question-num">Pregunta 12 de 12</div>
+      <div class="question">¿Hay algo más que quieras contarnos sobre cómo funciona tu negocio?</div>
+      <textarea id="p12" placeholder="Cualquier cosa que quieras agregar (opcional)"></textarea>
+      <button type="button" class="btn btn-submit" onclick="submitForm()">Guardar encuesta</button>
+      <button type="button" class="btn btn-back" onclick="back()">Volver</button>
+    </div>
+
+    <div class="step" data-step="13">
+      <div class="thanks">
+        <h2>Listo!</h2>
+        <p>Gracias por tu tiempo. Un vendedor de Operaria te va a contactar pronto con una propuesta personalizada para tu negocio.</p>
+        <p style="margin-top: 20px; color: #4A9B93;">Operaria: encendemos la operación.</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+let currentStep = 0;
+
+function updateProgress() {
+  document.getElementById('progressBar').style.width = Math.round((currentStep / 12) * 100) + '%';
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector('[data-step="' + n + '"]').classList.add('active');
+  currentStep = n;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function next() {
+  if (currentStep === 0) {
+    if (!document.getElementById('nombre').value || !document.getElementById('phone').value) {
+      alert('Nombre y WhatsApp son obligatorios');
+      return;
+    }
+  }
+  showStep(currentStep + 1);
+}
+
+function back() { if (currentStep > 0) showStep(currentStep - 1); }
+
+function selectOption(el, fieldId) {
+  el.parentElement.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById(fieldId).value = el.textContent;
+}
+
+function toggleOption(el, fieldId) {
+  el.classList.toggle('selected');
+  var selected = el.parentElement.querySelectorAll('.option.selected');
+  document.getElementById(fieldId).value = Array.from(selected).map(o => o.textContent).join(', ');
+}
+
+async function submitForm() {
+  var data = {
+    nombre: document.getElementById('nombre').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    negocio: document.getElementById('p1').value,
+    servicios_con_hora: document.getElementById('p2').value,
+    canal_principal: document.getElementById('p3').value,
+    responde_a_tiempo: document.getElementById('p4').value,
+    herramienta_actual: document.getElementById('p5').value,
+    trabaja_con_apoyo: document.getElementById('p6').value,
+    volumen_diario: document.getElementById('p7').value,
+    principal_dolor: document.getElementById('p8').value,
+    pierde_clientes: document.getElementById('p9').value,
+    momento_critico: document.getElementById('p10').value,
+    quiere_delegar: document.getElementById('p11').value,
+    resumen_final: document.getElementById('p12').value,
+    fuente: 'formulario_web',
+    fecha: new Date().toISOString().replace('T', ' ').substring(0, 19)
+  };
+
+  var btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbyxml5-mRekfMmaOELAl-SIHcX22-I6m6uDlsm1dsVdX93i_lyseqKeeiPzDE8qgiw/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(data)
+    });
+    showStep(13);
+  } catch (e) {
+    alert('Error de conexión. Intenta de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Guardar encuesta';
+  }
+}
+
+var params = new URLSearchParams(window.location.search);
+if (params.get('phone')) document.getElementById('phone').value = params.get('phone');
+if (params.get('nombre')) document.getElementById('nombre').value = params.get('nombre');
+</script>
+</body>
+</html>
