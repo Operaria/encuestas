@@ -381,8 +381,8 @@
   <div class="title">Encuesta de Levantamiento</div>
   <div class="desc">Con esta información armamos tu piloto. Respóndela con calma, a tu ritmo, y guárdala cuando esté lista.</div>
   <div class="meta-line">
-    <span><span class="label">Cliente</span> <span class="value" id="meta-cliente">José Bravo Barber</span></span>
-    <span><span class="label">Negocio</span> <span class="value" id="meta-negocio">BarberIA360°</span></span>
+    <span><span class="label">Cliente</span> <span class="value" id="meta-cliente">José Bravo</span></span>
+    <span><span class="label">Negocio</span> <span class="value" id="meta-negocio">José Bravo Barber</span></span>
     <span><span class="label">Fecha</span> <span class="value" id="meta-fecha">16 / 04 / 2026</span></span>
   </div>
 </div>
@@ -392,6 +392,26 @@
 
   <div class="intro">
     <strong>Cómo funciona:</strong> hay seis bloques. No necesitas completarlos en orden. Si alguna pregunta no aplica, déjala vacía. Cuando termines, haz clic en <strong>Guardar respuestas</strong>: se descarga un archivo HTML con todo lo que escribiste, y ese archivo nos lo envías de vuelta.
+  </div>
+
+  <!-- ====== BLOQUE -1: IDENTIFICACIÓN ====== -->
+  <h1>Tus datos</h1>
+  <p>Para que podamos contactarte con tu propuesta personalizada.</p>
+
+  <div class="field">
+    <label class="q">Tu nombre</label>
+    <input type="text" data-key="id_nombre" placeholder="Ej: José Bravo" required>
+  </div>
+
+  <div class="field">
+    <label class="q">Tu WhatsApp</label>
+    <div class="hint">Solo dígitos con código país, sin "+". Ej: 56912345678</div>
+    <input type="tel" data-key="id_telefono" placeholder="56912345678" required>
+  </div>
+
+  <div class="field">
+    <label class="q">Tu email (opcional)</label>
+    <input type="text" data-key="id_email" placeholder="jose@minegocio.cl">
   </div>
 
   <!-- ====== BLOQUE 0: CONTEXTO OPERATIVO ====== -->
@@ -731,6 +751,7 @@ function collectAnswers() {
     cliente: document.getElementById('meta-cliente').textContent.trim(),
     negocio: document.getElementById('meta-negocio').textContent.trim(),
     fecha: document.getElementById('meta-fecha').textContent.trim(),
+    id: {},
     contexto: {},
     catalogo: [],
     equipo: {},
@@ -823,7 +844,7 @@ function flattenForNetlify(data) {
     fecha: data.fecha,
     catalogo_json: JSON.stringify(data.catalogo)
   };
-  for (const section of ['contexto', 'equipo', 'pagos', 'voz', 'tecnico']) {
+  for (const section of ['id', 'contexto', 'equipo', 'pagos', 'voz', 'tecnico']) {
     for (const [k, v] of Object.entries(data[section] || {})) {
       flat[`${section}_${k}`] = String(v);
     }
