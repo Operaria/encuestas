@@ -2,11 +2,12 @@
 
 interface Props {
   nombre: string;
+  negocio: string;
   fecha: string;
   onComenzar: () => void;
 }
 
-export default function Portada({ nombre, fecha, onComenzar }: Props) {
+export default function Portada({ nombre, negocio, fecha, onComenzar }: Props) {
   return (
     <section className="min-h-screen bg-navy flex flex-col items-center justify-center px-6 py-16 sm:px-10">
       <div className="max-w-3xl w-full flex flex-col items-center text-center">
@@ -26,7 +27,7 @@ export default function Portada({ nombre, fecha, onComenzar }: Props) {
 
         <div className="border-t border-petrol mt-12 pt-6 w-full flex flex-wrap justify-center gap-x-12 gap-y-4">
           <MetaPair label="Cliente" value={nombre} />
-          <MetaPair label="Negocio" value={nombre} />
+          <MetaPair label="Negocio" value={negocio} />
           <MetaPair label="Fecha" value={fecha} />
         </div>
 

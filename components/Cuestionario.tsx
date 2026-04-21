@@ -10,7 +10,7 @@ import Portada from "./Portada";
 import Bloque from "./Bloque";
 import SaveBar from "./SaveBar";
 
-interface Props { cliente: string }
+interface Props { cliente: string; negocio: string }
 
 type Status = { tone: "muted" | "teal" | "warm"; text: string };
 
@@ -19,7 +19,7 @@ const DEFAULT_STATUS: Status = {
   text: "Completa a tu ritmo. Cuando termines, haz clic en Enviar.",
 };
 
-export default function Cuestionario({ cliente }: Props) {
+export default function Cuestionario({ cliente, negocio }: Props) {
   const router = useRouter();
   const nombre = useMemo(() => slugToName(cliente), [cliente]);
   const [fecha, setFecha] = useState("");
@@ -139,7 +139,7 @@ export default function Cuestionario({ cliente }: Props) {
 
   return (
     <>
-      <Portada nombre={nombre} fecha={fecha} onComenzar={comenzar} />
+      <Portada nombre={nombre} negocio={negocio} fecha={fecha} onComenzar={comenzar} />
 
       <div ref={contenidoRef} className="bg-offwhite">
         <div className="max-w-[820px] mx-auto px-5 py-10 pb-32 sm:px-10 sm:py-16">
