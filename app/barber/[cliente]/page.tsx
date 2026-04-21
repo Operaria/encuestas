@@ -2,7 +2,7 @@ import Cuestionario from "@/components/Cuestionario";
 import { slugToName } from "@/lib/utils";
 import { getVertical } from "@/lib/verticals";
 
-export default async function DiagnosticoPage({
+export default async function BarberPage({
   params,
   searchParams,
 }: {
@@ -12,5 +12,5 @@ export default async function DiagnosticoPage({
   const { cliente } = await params;
   const sp = await searchParams;
   const negocio = sp.negocio ? slugToName(sp.negocio) : "—";
-  return <Cuestionario cliente={cliente} negocio={negocio} vertical={getVertical("generico")} />;
+  return <Cuestionario cliente={cliente} negocio={negocio} vertical={getVertical("barber")} />;
 }

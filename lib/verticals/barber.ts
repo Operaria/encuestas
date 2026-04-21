@@ -1,0 +1,142 @@
+import type { Bloque } from "../types";
+
+export const barberBloques: Bloque[] = [
+  {
+    id: 0,
+    titulo: "Tus datos",
+    subtitulo: "Para contactarte con tu propuesta personalizada",
+    preguntas: [
+      { id: "id_nombre", tipo: "texto", label: "Tu nombre", placeholder: "Ej: José Bravo" },
+      { id: "id_telefono", tipo: "tel", label: "Tu WhatsApp", hint: "Solo dígitos con código país, sin \"+\". Ej: 56912345678", placeholder: "56912345678" },
+      { id: "id_email", tipo: "texto", label: "Tu email (opcional)", placeholder: "jose@minegocio.cl" },
+    ],
+  },
+  {
+    id: 1,
+    titulo: "1. Sobre tu negocio",
+    subtitulo: "Queremos entender cómo operas hoy antes de proponerte cómo automatizarlo",
+    preguntas: [
+      { id: "contexto_servicios_agendables", numero: "1.1", tipo: "textarea", label: "¿Todos los servicios que ofreces se agendan, o algunos son espontáneos?", placeholder: "Ej: todos se agendan; o el corte se agenda pero la barba es al paso..." },
+      {
+        id: "contexto_canales", numero: "1.2", tipo: "checkboxes",
+        label: "¿Por qué vía recibes más mensajes o consultas?",
+        opciones: ["WhatsApp", "Instagram", "Llamada telefónica", "Presencial", "Otro"],
+      },
+      { id: "contexto_responde_tiempo", numero: "1.3", tipo: "textarea", label: "¿Alcanzas siempre a responder los mensajes a tiempo?", placeholder: "Sí / a veces / casi nunca, y por qué..." },
+      { id: "contexto_herramienta_actual", numero: "1.4", tipo: "textarea", label: "¿Cómo organizas agenda, clientes y pagos hoy?", hint: "Papel, cuaderno, planilla Excel, app de agenda, memoria, mezcla..." },
+      { id: "contexto_apoyo", numero: "1.5", tipo: "textarea", label: "¿Hay alguien que te apoye con parte del trabajo?", placeholder: "Familia, asistente, equipo, solo..." },
+      { id: "contexto_volumen_diario", numero: "1.6", tipo: "texto", label: "Aproximadamente, ¿cuántos mensajes o consultas recibes en un día normal?", placeholder: "Ej: 15-20" },
+      { id: "contexto_principal_dolor", numero: "1.7", tipo: "textarea", label: "¿Qué parte de tu trabajo diario te quita más tiempo o energía?" },
+      { id: "contexto_pierde_clientes", numero: "1.8", tipo: "textarea", label: "¿Pierdes clientes por no responder a tiempo? ¿Cuántos aproximadamente al mes?", placeholder: "Ej: 5 a 10 al mes; no tengo claro pero pasa seguido..." },
+      { id: "contexto_momento_critico", numero: "1.9", tipo: "textarea", label: "¿En qué momento tu día se vuelve más ajetreado?" },
+      { id: "contexto_delegar", numero: "1.10", tipo: "textarea", label: "Si pudieras tener un asistente que se encargara de algo por ti, ¿qué le delegarías primero?" },
+      { id: "contexto_comentario_libre", numero: "1.11", tipo: "textarea", label: "¿Hay algo más que quieras contarnos sobre cómo funciona tu negocio?" },
+    ],
+  },
+  {
+    id: 2,
+    titulo: "2. Catálogo de servicios",
+    subtitulo: "Cada servicio que ofreces, cuánto demora y cuánto cobras. Sin esto el bot no puede agendar.",
+    preguntas: [
+      {
+        id: "catalogo",
+        tipo: "tabla",
+        label: "Servicios",
+        columnas: [
+          { key: "servicio", label: "Servicio", tipo: "texto", placeholder: "Ej: Corte clásico", width: "35%" },
+          { key: "duracion", label: "Duración (min)", tipo: "number", placeholder: "30", width: "18%" },
+          { key: "precio", label: "Precio (CLP)", tipo: "number", placeholder: "8000", width: "20%" },
+          { key: "requiere_prof", label: "Requiere profesional", tipo: "select", opciones: ["No", "Sí"], width: "27%" },
+        ],
+        filaInicial: { servicio: "", duracion: "", precio: "", requiere_prof: "" },
+      },
+    ],
+  },
+  {
+    id: 3,
+    titulo: "3. Equipo y horarios",
+    preguntas: [
+      { id: "equipo_profesionales", numero: "3.1", tipo: "texto", label: "¿Quiénes atienden en el negocio?", hint: "Nombres, separados por coma.", placeholder: "Ej: Diego, Matías" },
+      { id: "equipo_especialidades", numero: "3.2", tipo: "textarea", label: "¿Qué hace cada uno? ¿Tienen especialidades?", placeholder: "Ej: Diego hace todo. Matías solo corte y barba." },
+      { id: "equipo_horario_negocio", numero: "3.3", tipo: "texto", label: "Horario general del negocio", placeholder: "Ej: Lun a Sáb 10:00–20:00, Dom cerrado" },
+      { id: "equipo_horario_staff", numero: "3.4", tipo: "textarea", label: "¿Algún profesional tiene un horario distinto al general?", placeholder: "Ej: Matías solo Lun a Vie. Diego atiende todos los días." },
+      { id: "equipo_bloques_fijos", numero: "3.5", tipo: "texto", label: "Descansos o bloques fijos (colación, etc.)", placeholder: "Ej: 13:00–14:00 colación todos los días" },
+      {
+        id: "equipo_agenda_modo", numero: "3.6", tipo: "radio",
+        label: "¿Cómo ordenas la agenda?",
+        hint: "Esto define cómo el bot ofrece horas disponibles.",
+        opciones: [
+          "Por segmentos fijos (ej: bloques de 30 min predefinidos)",
+          "Abierta, se va llenando según la duración del servicio agendado",
+          "Mixto / no estoy seguro",
+        ],
+      },
+      { id: "equipo_agenda_detalle", numero: "3.7", tipo: "textarea", label: "Si es mixto o hay reglas especiales, cuéntanos", placeholder: "Ej: en la mañana bloques fijos, en la tarde abierta..." },
+    ],
+  },
+  {
+    id: 4,
+    titulo: "4. Pagos y reglas del negocio",
+    preguntas: [
+      {
+        id: "pagos_medios", numero: "4.1", tipo: "checkboxes",
+        label: "Medios de pago que aceptas",
+        opciones: ["Efectivo", "Transferencia", "Tarjeta débito", "Tarjeta crédito", "MercadoPago", "Otro"],
+      },
+      {
+        id: "pagos_cobro_adelantado", numero: "4.2", tipo: "radio",
+        label: "¿Cobras por adelantado?",
+        opciones: ["No", "Sí, todo", "Parcial (abono)"],
+      },
+      { id: "pagos_politica_cancelacion", numero: "4.3", tipo: "textarea", label: "Política de cancelación", hint: "¿Con cuánta anticipación debe avisar? ¿Hay penalización?" },
+      { id: "pagos_politica_noshow", numero: "4.4", tipo: "textarea", label: "¿Qué haces hoy cuando un cliente no llega (no-show)?", placeholder: "Ej: hoy nada; me gustaría cobrar la mitad la próxima vez..." },
+      { id: "pagos_reagendamiento", numero: "4.5", tipo: "texto", label: "¿Cuántas veces permites que un cliente reagende sin costo?", placeholder: "Ej: 1 vez sin costo, después se cobra abono" },
+    ],
+  },
+  {
+    id: 5,
+    titulo: "5. Voz y tono del bot",
+    subtitulo: "El bot se presenta como parte de tu equipo, con nombre propio",
+    preguntas: [
+      {
+        id: "voz_trato", numero: "5.1", tipo: "radio",
+        label: "¿Cómo tratas a tus clientes?",
+        opciones: ["Tú, informal y cercano", "Tú, pero más formal", "Usted, formal"],
+      },
+      { id: "voz_frases_tipicas", numero: "5.2", tipo: "textarea", label: "Frases o muletillas típicas que uses con tus clientes", hint: "Cómo saludas, cómo confirmas, cómo te despides.", placeholder: "Ej: \"Listo compa\", \"Te espero\", \"Dale, pasa\"" },
+      { id: "voz_nombre_bot", numero: "5.3", tipo: "texto", label: "¿Qué nombre quieres para el bot?", hint: "Se presentará como parte del equipo: \"Hola, soy [Nombre] de BarberIA360°\".", placeholder: "Ej: Juan" },
+      { id: "voz_tono", numero: "5.4", tipo: "texto", label: "Tono general en una frase", placeholder: "Ej: Cercano, relajado, de barrio" },
+      { id: "voz_restricciones", numero: "5.5", tipo: "textarea", label: "¿Qué NO quieres que diga o cómo NO quieres que suene?", placeholder: "Ej: Nada formal, no \"estimado\", no emojis..." },
+    ],
+  },
+  {
+    id: 6,
+    titulo: "6. Acceso técnico",
+    preguntas: [
+      {
+        id: "tecnico_wsp_tipo", numero: "6.1", tipo: "radio",
+        label: "¿Qué tipo de WhatsApp usas para el negocio?",
+        opciones: [
+          "Business, dedicado",
+          "Business, compartido con personal",
+          "Personal (no tengo Business)",
+          "No tengo WhatsApp del negocio",
+        ],
+      },
+      { id: "tecnico_wsp_numero", numero: "6.2", tipo: "tel", label: "Número de WhatsApp a conectar", hint: "Solo dígitos con código país, sin \"+\". Ej: 56912345678", placeholder: "56912345678" },
+      {
+        id: "tecnico_google_account", numero: "6.3", tipo: "radio",
+        label: "¿Tienes cuenta de Google (Gmail) del negocio?",
+        opciones: ["Sí, del negocio", "Uso mi Gmail personal", "No tengo"],
+      },
+      { id: "tecnico_google_email", numero: "6.4", tipo: "texto", label: "Email (si lo usas para el negocio)", placeholder: "negocio@gmail.com" },
+      {
+        id: "tecnico_migrar_google", numero: "6.5", tipo: "radio",
+        label: "¿Te gustaría tener todo centralizado en Google? (Agenda, planillas, correo, gratis y conectado. Nosotros ayudamos a migrar.)",
+        opciones: ["Sí, quiero migrar", "Ya uso Google", "No por ahora"],
+      },
+      { id: "tecnico_pasarela", numero: "6.6", tipo: "texto", label: "¿Tienes pasarela de pago? (Mercado Pago, Flow, Transbank...)", placeholder: "Ej: Mercado Pago / No tengo" },
+      { id: "tecnico_otras_herramientas", numero: "6.7", tipo: "textarea", label: "¿Qué otras herramientas usas hoy para el negocio?", placeholder: "Ej: Excel para cuentas, Instagram para promoción..." },
+    ],
+  },
+];

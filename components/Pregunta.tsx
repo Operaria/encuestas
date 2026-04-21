@@ -1,6 +1,6 @@
 "use client";
 
-import type { Pregunta as P, RespuestaValor } from "@/lib/types";
+import type { Pregunta as P, RespuestaValor, TablaFila, ColumnaTabla } from "@/lib/types";
 
 interface Props {
   pregunta: P;
@@ -15,7 +15,9 @@ export default function Pregunta({ pregunta, valor, onChange }: Props) {
   return (
     <div className="mb-6">
       <label className="block font-sans font-semibold text-[15px] text-navy mb-2">
-        <span className="font-mono text-teal text-[12px] font-medium mr-1.5">{pregunta.numero}</span>
+        {pregunta.numero && (
+          <span className="font-mono text-teal text-[12px] font-medium mr-1.5">{pregunta.numero}</span>
+        )}
         {pregunta.label}
       </label>
       {pregunta.hint && (
@@ -27,11 +29,23 @@ export default function Pregunta({ pregunta, valor, onChange }: Props) {
 }
 
 function renderInput(pregunta: P, valor: RespuestaValor | undefined, onChange: (v: RespuestaValor) => void) {
-  if (pregunta.tipo === "texto") {
+  if (pregunta.tipo === "texto" || pregunta.tipo === "tel") {
     return (
       <input
-        type="text"
+        type={pregunta.tipo === "tel" ? "tel" : "text"}
         className={inputBase}
+        placeholder={pregunta.placeholder}
+        value={(valor as string) ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    );
+  }
+  if (pregunta.tipo === "number") {
+    return (
+      <input
+        type="number"
+        className={inputBase}
+        placeholder={pregunta.placeholder}
         value={(valor as string) ?? ""}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -41,9 +55,44 @@ function renderInput(pregunta: P, valor: RespuestaValor | undefined, onChange: (
     return (
       <textarea
         className={`${inputBase} resize-y min-h-[72px]`}
+        placeholder={pregunta.placeholder}
         value={(valor as string) ?? ""}
         onChange={(e) => onChange(e.target.value)}
       />
+    );
+  }
+  if (pregunta.tipo === "radio") {
+    const current = (valor as string) ?? "";
+    return (
+      <div className="flex flex-wrap gap-x-4 gap-y-2.5 mt-1">
+        {pregunta.opciones?.map((op) => (
+          <label
+            key={op}
+            className="inline-flex items-center gap-1.5 text-[14px] text-body cursor-pointer px-3 py-1.5 border border-border rounded bg-white"
+          >
+            <input
+              type="radio"
+              checked={current === op}
+              onChange={() => onChange(op)}
+            />
+            {op}
+          </label>
+        ))}
+      </div>
+    );
+  }
+  if (pregunta.tipo === "select") {
+    return (
+      <select
+        className={inputBase}
+        value={(valor as string) ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">—</option>
+        {pregunta.opciones?.map((op) => (
+          <option key={op} value={op}>{op}</option>
+        ))}
+      </select>
     );
   }
   if (pregunta.tipo === "checkboxes") {
@@ -53,7 +102,7 @@ function renderInput(pregunta: P, valor: RespuestaValor | undefined, onChange: (
       const nuevo = seleccion.includes(op) ? seleccion.filter((s) => s !== op) : [...seleccion, op];
       onChange({ seleccion: nuevo, otro: v.otro ?? "" });
     };
-    const tieneOtros = seleccion.includes("Otros");
+    const tieneOtros = seleccion.includes("Otros") || seleccion.includes("Otro");
     return (
       <div>
         <div className="flex flex-wrap gap-x-4 gap-y-2.5 mt-1">
@@ -108,5 +157,114 @@ function renderInput(pregunta: P, valor: RespuestaValor | undefined, onChange: (
       </div>
     );
   }
+  if (pregunta.tipo === "tabla") {
+    return <Tabla pregunta={pregunta} valor={valor as TablaFila[] | undefined} onChange={onChange} />;
+  }
   return null;
+}
+
+function Tabla({
+  pregunta,
+  valor,
+  onChange,
+}: {
+  pregunta: P;
+  valor: TablaFila[] | undefined;
+  onChange: (v: RespuestaValor) => void;
+}) {
+  const columnas = pregunta.columnas ?? [];
+  const filaInicial = pregunta.filaInicial ?? Object.fromEntries(columnas.map((c) => [c.key, ""]));
+  const filas: TablaFila[] = valor && valor.length > 0 ? valor : [filaInicial];
+
+  const updateFila = (i: number, key: string, val: string) => {
+    const nuevas = filas.map((f, idx) => (idx === i ? { ...f, [key]: val } : f));
+    onChange(nuevas);
+  };
+  const agregar = () => onChange([...filas, { ...filaInicial }]);
+  const quitar = (i: number) => {
+    if (filas.length <= 1) return;
+    onChange(filas.filter((_, idx) => idx !== i));
+  };
+
+  return (
+    <div>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-white text-[14px]">
+          <thead>
+            <tr>
+              {columnas.map((c) => (
+                <th
+                  key={c.key}
+                  style={{ width: c.width }}
+                  className="bg-navy text-white font-sans font-semibold text-[12px] text-left px-3 py-2.5"
+                >
+                  {c.label}
+                </th>
+              ))}
+              <th className="bg-navy w-10" />
+            </tr>
+          </thead>
+          <tbody>
+            {filas.map((fila, i) => (
+              <tr key={i} className={i % 2 === 0 ? "bg-[#FAFAF8]" : "bg-offwhite"}>
+                {columnas.map((c) => (
+                  <td key={c.key} className="border-b border-border p-1.5">
+                    <CeldaTabla columna={c} valor={fila[c.key] ?? ""} onChange={(v) => updateFila(i, c.key, v)} />
+                  </td>
+                ))}
+                <td className="border-b border-border text-center">
+                  <button
+                    type="button"
+                    onClick={() => quitar(i)}
+                    className="text-muted hover:text-red-500 px-2 text-[16px]"
+                    aria-label="Quitar fila"
+                  >
+                    ×
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <button
+        type="button"
+        onClick={agregar}
+        className="mt-2 bg-transparent text-teal border-[1.5px] border-dashed border-teal px-4 py-2 rounded font-sans font-semibold text-[13px] hover:bg-teal/[0.08]"
+      >
+        + Agregar fila
+      </button>
+    </div>
+  );
+}
+
+function CeldaTabla({
+  columna,
+  valor,
+  onChange,
+}: {
+  columna: ColumnaTabla;
+  valor: string;
+  onChange: (v: string) => void;
+}) {
+  const cls = "w-full border-none bg-transparent px-2 py-1.5 text-[13px] outline-none focus:bg-teal/[0.06]";
+  if (columna.tipo === "select") {
+    return (
+      <select className={cls} value={valor} onChange={(e) => onChange(e.target.value)}>
+        <option value="">—</option>
+        {columna.opciones?.map((op) => (
+          <option key={op} value={op}>{op}</option>
+        ))}
+      </select>
+    );
+  }
+  return (
+    <input
+      type={columna.tipo === "number" ? "number" : "text"}
+      className={cls}
+      placeholder={columna.placeholder}
+      value={valor}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
 }

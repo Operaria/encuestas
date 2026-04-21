@@ -2,15 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { bloques, BLOQUE_DOLOR_IDS } from "@/lib/preguntas";
 import { loadRespuestas, saveRespuestas, clearRespuestas } from "@/lib/storage";
 import type { Respuestas, RespuestaValor } from "@/lib/types";
+import type { Vertical } from "@/lib/verticals";
 import { slugToName, formatDate } from "@/lib/utils";
 import Portada from "./Portada";
 import Bloque from "./Bloque";
 import SaveBar from "./SaveBar";
 
-interface Props { cliente: string; negocio: string }
+interface Props { cliente: string; negocio: string; vertical: Vertical }
 
 type Status = { tone: "muted" | "teal" | "warm"; text: string };
 
@@ -19,9 +19,10 @@ const DEFAULT_STATUS: Status = {
   text: "Completa a tu ritmo. Cuando termines, haz clic en Enviar.",
 };
 
-export default function Cuestionario({ cliente, negocio }: Props) {
+export default function Cuestionario({ cliente, negocio, vertical }: Props) {
   const router = useRouter();
   const nombre = useMemo(() => slugToName(cliente), [cliente]);
+  const storageSlug = `${vertical.id}-${cliente}`;
   const [fecha, setFecha] = useState("");
   const [respuestas, setRespuestas] = useState<Respuestas>({});
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -31,19 +32,19 @@ export default function Cuestionario({ cliente, negocio }: Props) {
   const [showModal, setShowModal] = useState(false);
 
   const contenidoRef = useRef<HTMLDivElement>(null);
-  const bloque2Ref = useRef<HTMLDivElement>(null);
+  const bloqueDolorRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setFecha(formatDate(new Date()));
-    const data = loadRespuestas(cliente);
+    const data = loadRespuestas(storageSlug);
     if (data) {
       setRespuestas(data.respuestas);
       setSavedAt(data.savedAt);
     }
-  }, [cliente]);
+  }, [storageSlug]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -51,25 +52,23 @@ export default function Cuestionario({ cliente, negocio }: Props) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setStatus({ tone: "muted", text: "Guardando..." });
-      const ts = saveRespuestas(cliente, respuestas);
+      const ts = saveRespuestas(storageSlug, respuestas);
       setSavedAt(ts);
       setDirty(false);
     }, 500);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [respuestas, dirty, cliente]);
+  }, [respuestas, dirty, storageSlug]);
 
-  // Backup interval cada 10s
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       if (Object.keys(respuestas).length > 0) {
-        const ts = saveRespuestas(cliente, respuestas);
+        const ts = saveRespuestas(storageSlug, respuestas);
         setSavedAt(ts);
       }
     }, 10000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [cliente, respuestas]);
+  }, [storageSlug, respuestas]);
 
-  // Tick para "guardado hace Xs"
   useEffect(() => {
     if (tickRef.current) clearInterval(tickRef.current);
     if (savedAt && !dirty && !enviando) {
@@ -92,8 +91,10 @@ export default function Cuestionario({ cliente, negocio }: Props) {
     contenidoRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const dolorIds = vertical.dolorIds ?? [];
   const bloqueDolorVacio = () => {
-    return BLOQUE_DOLOR_IDS.every((id) => {
+    if (dolorIds.length === 0) return false;
+    return dolorIds.every((id) => {
       const v = respuestas[id];
       if (v === undefined || v === null) return true;
       if (typeof v === "string") return v.trim() === "";
@@ -114,6 +115,7 @@ export default function Cuestionario({ cliente, negocio }: Props) {
         body: JSON.stringify({
           cliente,
           nombreFormateado: nombre,
+          vertical: vertical.id,
           respuestas,
           timestamp: new Date().toISOString(),
         }),
@@ -121,7 +123,7 @@ export default function Cuestionario({ cliente, negocio }: Props) {
       if (!res.ok) throw new Error("Error servidor");
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Error");
-      clearRespuestas(cliente);
+      clearRespuestas(storageSlug);
       router.push(`/gracias?cliente=${encodeURIComponent(cliente)}`);
     } catch {
       setStatus({ tone: "warm", text: "Error al enviar. Por favor intenta de nuevo." });
@@ -137,19 +139,28 @@ export default function Cuestionario({ cliente, negocio }: Props) {
     submit();
   };
 
+  // Identify el "dolor block" id para poder scrollear desde el modal
+  const dolorBloqueId = vertical.bloques.find((b) => b.preguntas.some((p) => dolorIds.includes(p.id)))?.id;
+
   return (
     <>
-      <Portada nombre={nombre} negocio={negocio} fecha={fecha} onComenzar={comenzar} />
+      <Portada
+        nombre={nombre}
+        negocio={negocio}
+        fecha={fecha}
+        onComenzar={comenzar}
+        titulo={vertical.nombreEncuesta}
+      />
 
       <div ref={contenidoRef} className="bg-offwhite">
         <div className="max-w-[820px] mx-auto px-5 py-10 pb-32 sm:px-10 sm:py-16">
-          {bloques.map((b) => (
+          {vertical.bloques.map((b) => (
             <Bloque
               key={b.id}
               bloque={b}
               respuestas={respuestas}
               onChange={handleChange}
-              innerRef={b.id === 2 ? bloque2Ref : undefined}
+              innerRef={b.id === dolorBloqueId ? bloqueDolorRef : undefined}
             />
           ))}
 
@@ -176,11 +187,11 @@ export default function Cuestionario({ cliente, negocio }: Props) {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  bloque2Ref.current?.scrollIntoView({ behavior: "smooth" });
+                  bloqueDolorRef.current?.scrollIntoView({ behavior: "smooth" });
                 }}
                 className="border-[1.5px] border-teal text-teal rounded-md px-4 py-2 font-sans font-semibold text-[14px]"
               >
-                Volver al bloque 2
+                Volver al bloque
               </button>
               <button
                 onClick={() => { setShowModal(false); submit(); }}

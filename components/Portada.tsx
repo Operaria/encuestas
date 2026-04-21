@@ -5,9 +5,10 @@ interface Props {
   negocio: string;
   fecha: string;
   onComenzar: () => void;
+  titulo?: string;
 }
 
-export default function Portada({ nombre, negocio, fecha, onComenzar }: Props) {
+export default function Portada({ nombre, negocio, fecha, onComenzar, titulo }: Props) {
   return (
     <section className="min-h-screen bg-navy flex flex-col items-center justify-center px-6 py-16 sm:px-10">
       <div className="max-w-3xl w-full flex flex-col items-center text-center">
@@ -19,7 +20,7 @@ export default function Portada({ nombre, negocio, fecha, onComenzar }: Props) {
         </h1>
         <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
         <h2 className="font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight">
-          Encuesta de Levantamiento
+          {titulo ?? "Encuesta de Levantamiento"}
         </h2>
         <p className="text-teal text-[16px] mt-4">
           Con esta información, armamos tu operación.
