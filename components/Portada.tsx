@@ -1,0 +1,51 @@
+"use client";
+
+interface Props {
+  nombre: string;
+  fecha: string;
+  onComenzar: () => void;
+}
+
+export default function Portada({ nombre, fecha, onComenzar }: Props) {
+  return (
+    <section className="min-h-screen bg-navy flex flex-col items-center justify-center px-6 py-16 sm:px-10">
+      <div className="max-w-3xl w-full flex flex-col items-center text-center">
+        <p className="font-mono text-teal text-[13px] uppercase tracking-[4px] mb-6">
+          Manos a la ópera
+        </p>
+        <h1 className="font-sans font-extrabold text-offwhite text-[48px] sm:text-[72px] leading-none tracking-[-1px]">
+          Operaria <span className="text-teal">Flow.</span>
+        </h1>
+        <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
+        <h2 className="font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight">
+          Encuesta de Levantamiento
+        </h2>
+        <p className="text-teal text-[16px] mt-4">
+          Con esta información, armamos tu operación.
+        </p>
+
+        <div className="border-t border-petrol mt-12 pt-6 w-full flex flex-wrap justify-center gap-x-12 gap-y-4">
+          <MetaPair label="Cliente" value={nombre} />
+          <MetaPair label="Negocio" value={nombre} />
+          <MetaPair label="Fecha" value={fecha} />
+        </div>
+
+        <button
+          onClick={onComenzar}
+          className="mt-14 bg-teal text-white font-sans font-semibold text-[14px] px-8 py-3 rounded-full hover:opacity-90 transition"
+        >
+          Comenzar
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function MetaPair({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <span className="font-mono text-muted text-[11px] uppercase tracking-[2px]">{label}</span>
+      <span className="font-mono text-white text-[12px]">{value}</span>
+    </div>
+  );
+}

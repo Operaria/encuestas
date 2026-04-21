@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Operaria Encuestas
 
-## Getting Started
+Cuestionario de diagnóstico de Operaria Flow. Cada prospecto recibe un link único, completa 21 preguntas en 4 bloques con autoguardado, y al enviar llega un PDF al correo de Francisco.
 
-First, run the development server:
+URL de producción: **https://agente.operaria.cl**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Crear link para un cliente nuevo
+
+Construye la URL con un slug (minúsculas, palabras separadas con guión):
+
+```
+https://agente.operaria.cl/diagnostico/maria-perez
+https://agente.operaria.cl/diagnostico/juan-cafe-central
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El slug se convierte automáticamente en nombre formateado en la portada (`maria-perez` → "Maria Perez"). No requiere registrar al cliente en ningún sistema.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Ver respuestas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Cada envío llega como correo a `franciscomunoz@operaria.cl` con:
+- Resumen rápido en el cuerpo del correo
+- PDF adjunto con las 21 respuestas completas
 
-## Learn More
+## Correr local
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Abre http://localhost:3000/diagnostico/prueba
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Necesitas `.env.local` (ver `.env.example`):
+```
+RESEND_API_KEY=re_xxxxxxxxx
+DESTINATION_EMAIL=franciscomunoz@operaria.cl
+FROM_EMAIL=onboarding@resend.dev
+```
 
-## Deploy on Vercel
+## Hacer cambios y redeployar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Edita los archivos
+2. Commit y push:
+   ```bash
+   git add .
+   git commit -m "describe el cambio"
+   git push
+   ```
+3. Vercel detecta el push y redeploya automáticamente en ~2 minutos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Cambiar preguntas
+
+Edita `lib/preguntas.ts` — todo el contenido del cuestionario vive ahí.
+
+### Cambiar identidad visual
+
+- Colores: `app/globals.css` (sección `@theme`)
+- Tipografías: `app/layout.tsx`
+- Portada: `components/Portada.tsx`

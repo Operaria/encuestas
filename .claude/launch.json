@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "encuestas",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3037"],
+      "port": 3037,
+      "cwd": "/Users/inicio/claude/projects/operaria/operaria-flow/encuestas"
+    }
+  ]
+}
