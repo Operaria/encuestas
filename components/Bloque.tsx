@@ -1,6 +1,7 @@
 "use client";
 
 import type { Bloque as B, Respuestas, RespuestaValor } from "@/lib/types";
+import { debeMostrar } from "@/lib/condicional";
 import Pregunta from "./Pregunta";
 
 interface Props {
@@ -24,14 +25,17 @@ export default function Bloque({ bloque, respuestas, onChange, innerRef }: Props
           <strong className="text-navy">{bloque.intro}</strong>
         </div>
       )}
-      {bloque.preguntas.map((p) => (
-        <Pregunta
-          key={p.id}
-          pregunta={p}
-          valor={respuestas[p.id]}
-          onChange={(v) => onChange(p.id, v)}
-        />
-      ))}
+      {bloque.preguntas.map((p) =>
+        debeMostrar(p.mostrarSi, respuestas) ? (
+          <Pregunta
+            key={p.id}
+            pregunta={p}
+            valor={respuestas[p.id]}
+            respuestas={respuestas}
+            onChange={(v) => onChange(p.id, v)}
+          />
+        ) : null
+      )}
     </section>
   );
 }

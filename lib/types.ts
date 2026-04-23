@@ -7,7 +7,16 @@ export type TipoPregunta =
   | "number"
   | "radio"
   | "select"
-  | "tabla";
+  | "tabla"
+  | "boolean";
+
+export interface MostrarSi {
+  id: string;
+  // La pregunta se muestra si la respuesta a `id` cumple alguna de estas condiciones
+  igual?: string | number | boolean;
+  distintoDe?: string | number | boolean;
+  incluye?: string; // para checkboxes (struct {seleccion}) o arrays planos
+}
 
 export interface ColumnaTabla {
   key: string;
@@ -32,6 +41,9 @@ export interface Pregunta {
   labelMax?: string;
   columnas?: ColumnaTabla[];
   filaInicial?: Record<string, string>;
+  mostrarSi?: MostrarSi;
+  opcionesDe?: string; // para radio dinámico: usa la respuesta de otra pregunta como opciones
+  maxLength?: number;
 }
 
 export interface Bloque {
@@ -48,6 +60,7 @@ export type RespuestaValor =
   | string
   | string[]
   | number
+  | boolean
   | { seleccion: string[]; otro?: string }
   | TablaFila[];
 

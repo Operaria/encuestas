@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type { Bloque, Respuestas, TablaFila } from "@/lib/types";
+import { debeMostrar } from "@/lib/condicional";
 
 const C = {
   navy: "#0F1E3A",
@@ -36,6 +37,7 @@ const s = StyleSheet.create({
 
 function formatRespuesta(v: unknown): string {
   if (v === undefined || v === null || v === "") return "";
+  if (typeof v === "boolean") return v ? "Sí" : "No";
   if (typeof v === "string") return v;
   if (typeof v === "number") return String(v);
   if (Array.isArray(v)) {
@@ -91,7 +93,7 @@ export function PDFDiagnostico({ nombre, negocio, fecha, bloques, respuestas, ti
           <View key={b.id} wrap>
             <Text style={s.bloqueTitulo}>{b.titulo}</Text>
             {b.subtitulo && <Text style={s.bloqueSub}>{b.subtitulo}</Text>}
-            {b.preguntas.map((p) => {
+            {b.preguntas.filter((p) => debeMostrar(p.mostrarSi, respuestas)).map((p) => {
               if (p.tipo === "tabla") {
                 const filas = (respuestas[p.id] as TablaFila[] | undefined) ?? [];
                 const filasConDatos = filas.filter((f) => Object.values(f).some((v) => v && String(v).trim() !== ""));

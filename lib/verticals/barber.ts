@@ -39,6 +39,19 @@ export const barberBloques: Bloque[] = [
     subtitulo: "Cada servicio que ofreces, cuánto demora y cuánto cobras. Sin esto el bot no puede agendar.",
     preguntas: [
       {
+        id: "reserva_gratuita",
+        tipo: "boolean",
+        label: "Mi negocio no cobra por reservar (reserva gratuita, el cliente paga consumo en el local).",
+        placeholder: "Sí, la reserva es gratuita",
+      },
+      {
+        id: "ticket_promedio_consumo_clp",
+        tipo: "number",
+        label: "Ticket promedio de consumo por cliente en el local (CLP)",
+        placeholder: "Ej: 12000",
+        mostrarSi: { id: "reserva_gratuita", igual: true },
+      },
+      {
         id: "catalogo",
         tipo: "tabla",
         label: "Servicios",
@@ -49,6 +62,7 @@ export const barberBloques: Bloque[] = [
           { key: "requiere_prof", label: "Requiere profesional", tipo: "select", opciones: ["No", "Sí"], width: "27%" },
         ],
         filaInicial: { servicio: "", duracion: "", precio: "", requiere_prof: "" },
+        mostrarSi: { id: "reserva_gratuita", distintoDe: true },
       },
     ],
   },

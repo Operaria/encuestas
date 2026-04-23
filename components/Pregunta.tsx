@@ -1,17 +1,18 @@
 "use client";
 
-import type { Pregunta as P, RespuestaValor, TablaFila, ColumnaTabla } from "@/lib/types";
+import type { Pregunta as P, Respuestas, RespuestaValor, TablaFila, ColumnaTabla } from "@/lib/types";
 
 interface Props {
   pregunta: P;
   valor: RespuestaValor | undefined;
+  respuestas?: Respuestas;
   onChange: (v: RespuestaValor) => void;
 }
 
 const inputBase =
   "w-full font-sans text-[15px] text-body bg-white border border-border rounded px-3 py-2.5 transition-all outline-none focus:border-teal focus:ring-[3px] focus:ring-teal/15";
 
-export default function Pregunta({ pregunta, valor, onChange }: Props) {
+export default function Pregunta({ pregunta, valor, respuestas, onChange }: Props) {
   return (
     <div className="mb-6">
       <label className="block font-sans font-semibold text-[15px] text-navy mb-2">
@@ -23,12 +24,61 @@ export default function Pregunta({ pregunta, valor, onChange }: Props) {
       {pregunta.hint && (
         <p className="text-[13px] text-muted -mt-1.5 mb-3">{pregunta.hint}</p>
       )}
-      {renderInput(pregunta, valor, onChange)}
+      {renderInput(pregunta, valor, onChange, respuestas)}
     </div>
   );
 }
 
-function renderInput(pregunta: P, valor: RespuestaValor | undefined, onChange: (v: RespuestaValor) => void) {
+function renderInput(
+  pregunta: P,
+  valor: RespuestaValor | undefined,
+  onChange: (v: RespuestaValor) => void,
+  respuestas?: Respuestas,
+) {
+  if (pregunta.tipo === "boolean") {
+    const checked = valor === true;
+    return (
+      <label className="inline-flex items-center gap-2 text-[14px] text-body cursor-pointer px-3 py-2 border border-border rounded bg-white">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <span>{pregunta.placeholder ?? "Sí"}</span>
+      </label>
+    );
+  }
+  if (pregunta.tipo === "radio" && pregunta.opcionesDe && respuestas) {
+    const fuente = respuestas[pregunta.opcionesDe];
+    let opcionesDinamicas: string[] = [];
+    if (Array.isArray(fuente) && typeof fuente[0] === "string") {
+      opcionesDinamicas = fuente as string[];
+    } else if (fuente && typeof fuente === "object" && "seleccion" in (fuente as object)) {
+      opcionesDinamicas = (fuente as { seleccion: string[] }).seleccion;
+    }
+    const current = (valor as string) ?? "";
+    if (opcionesDinamicas.length === 0) {
+      return <p className="text-[13px] text-muted italic">Marcá al menos una opción arriba para poder priorizar.</p>;
+    }
+    return (
+      <div className="flex flex-col gap-2 mt-1">
+        {opcionesDinamicas.map((op) => (
+          <label
+            key={op}
+            className="inline-flex items-center gap-1.5 text-[14px] text-body cursor-pointer px-3 py-1.5 border border-border rounded bg-white"
+          >
+            <input
+              type="radio"
+              checked={current === op}
+              onChange={() => onChange(op)}
+            />
+            {op}
+          </label>
+        ))}
+      </div>
+    );
+  }
+
   if (pregunta.tipo === "texto" || pregunta.tipo === "tel") {
     return (
       <input
