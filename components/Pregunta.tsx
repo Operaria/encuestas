@@ -85,6 +85,7 @@ function renderInput(
         type={pregunta.tipo === "tel" ? "tel" : "text"}
         className={inputBase}
         placeholder={pregunta.placeholder}
+        maxLength={pregunta.maxLength}
         value={(valor as string) ?? ""}
         onChange={(e) => onChange(e.target.value)}
       />

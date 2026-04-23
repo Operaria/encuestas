@@ -178,4 +178,49 @@ export const barberBloques: Bloque[] = [
       { id: "tecnico_otras_herramientas", numero: "6.8", tipo: "textarea", label: "¿Qué otras herramientas usas hoy para el negocio?", placeholder: "Ej: Excel para cuentas, Instagram para promoción..." },
     ],
   },
+  {
+    id: 7,
+    titulo: "7. Tus prioridades: Bloques 360",
+    intro: "Operaria Flow se activa por bloques. Indicá cuáles te interesan y cuál priorizás primero.",
+    preguntas: [
+      {
+        id: "bloques_360_interes",
+        numero: "7.1",
+        tipo: "checkboxes",
+        label: "¿Qué bloques 360 te interesan? Marcá todos los que apliquen.",
+        opciones: [
+          "Agendamiento 360 — agenda + confirmaciones + recordatorios por WhatsApp",
+          "Cobro 360 — cobro automático + boleta + cierre de caja",
+          "Reporte 360 — indicadores operativos y financieros del negocio",
+          "Captación 360 — waitlist + reactivación de clientes inactivos",
+        ],
+      },
+      {
+        id: "bloque_prioritario",
+        numero: "7.2",
+        tipo: "radio",
+        label: "De los que marcaste, ¿cuál priorizás para arrancar?",
+        opcionesDe: "bloques_360_interes",
+      },
+      {
+        id: "razon_prioridad",
+        numero: "7.3",
+        tipo: "texto",
+        label: "¿Por qué priorizás ese bloque? (1 línea)",
+        placeholder: "Máx 200 caracteres",
+        maxLength: 200,
+      },
+      {
+        id: "pasarela_deseada",
+        numero: "7.4",
+        tipo: "select",
+        label: "Como elegiste Cobro 360, ¿qué pasarela de pago preferís integrar?",
+        opciones: ["Transbank", "Flow", "Mercado Pago", "Khipu", "Getnet", "Otro", "No sé aún"],
+        mostrarSi: {
+          id: "bloques_360_interes",
+          incluye: "Cobro 360 — cobro automático + boleta + cierre de caja",
+        },
+      },
+    ],
+  },
 ];
