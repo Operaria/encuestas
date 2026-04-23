@@ -18,7 +18,7 @@ export const verticals: Record<string, Vertical> = {
   },
   barber: {
     id: "barber",
-    nombreEncuesta: "Encuesta de Levantamiento — BarberIA360°",
+    nombreEncuesta: "Levantamiento — BarberIA360°",
     bloques: barberBloques,
   },
 };
