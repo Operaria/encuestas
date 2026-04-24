@@ -58,7 +58,7 @@ function renderInput(
     }
     const current = (valor as string) ?? "";
     if (opcionesDinamicas.length === 0) {
-      return <p className="text-[13px] text-muted italic">Marcá al menos una opción arriba para poder priorizar.</p>;
+      return <p className="text-[13px] text-muted italic">Marca al menos una opción arriba para poder priorizar.</p>;
     }
     return (
       <div className="flex flex-col gap-2 mt-1">
