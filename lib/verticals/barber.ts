@@ -1,4 +1,11 @@
-import type { Bloque } from "../types";
+import type { Bloque, Respuestas } from "../types";
+
+// Labels canónicos (se usan como valores guardados y como claves de mostrarSi)
+const OPT_TRANSFERENCIA = "Transferencia bancaria";
+const OPT_PASARELA = "Pasarela de pago online — Transbank, Flow, Mercado Pago, Khipu, Getnet";
+const OPT_EFECTIVO = "Efectivo";
+const OPT_OTRO = "Otro";
+const OPT_COBRO_360 = "Cobro 360 — cobro automático + boleta + cierre de caja";
 
 export const barberBloques: Bloque[] = [
   {
@@ -93,18 +100,100 @@ export const barberBloques: Bloque[] = [
     titulo: "4. Pagos y reglas del negocio",
     preguntas: [
       {
-        id: "pagos_medios", numero: "4.1", tipo: "checkboxes",
-        label: "Medios de pago que aceptas",
-        opciones: ["Efectivo", "Transferencia", "Tarjeta débito", "Tarjeta crédito", "MercadoPago", "Otro"],
+        id: "medios_pago_aceptados",
+        numero: "4.1",
+        tipo: "checkboxes",
+        label: "¿Qué medios de pago aceptas hoy? (marca todos los que apliquen)",
+        opciones: [
+          OPT_TRANSFERENCIA,
+          OPT_PASARELA,
+          OPT_EFECTIVO,
+          OPT_OTRO,
+        ],
+      },
+      // --- Transferencia ---
+      {
+        id: "transferencia_banco",
+        tipo: "texto",
+        label: "Banco",
+        placeholder: "Ej: Banco de Chile",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
       },
       {
-        id: "pagos_cobro_adelantado", numero: "4.2", tipo: "radio",
+        id: "transferencia_tipo_cuenta",
+        tipo: "select",
+        label: "Tipo de cuenta",
+        opciones: ["Cuenta Corriente", "Cuenta Vista", "Cuenta RUT", "Cuenta de Ahorro", "Otra"],
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+      },
+      {
+        id: "transferencia_numero_cuenta",
+        tipo: "texto",
+        label: "Número de cuenta",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+      },
+      {
+        id: "transferencia_rut",
+        tipo: "texto",
+        label: "RUT del titular",
+        placeholder: "Ej: 12.345.678-9",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+      },
+      {
+        id: "transferencia_nombre_titular",
+        tipo: "texto",
+        label: "Nombre del titular",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+      },
+      {
+        id: "transferencia_email_notificacion",
+        tipo: "texto",
+        label: "Correo donde te llegan los avisos de transferencia (opcional)",
+        hint: "Si tienes un QR bancario para transferir, nos lo puedes enviar por WhatsApp al finalizar la encuesta.",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+      },
+      // --- Pasarela ---
+      {
+        id: "pasarela_deseada",
+        tipo: "select",
+        label: "¿Qué pasarela de pago prefieres integrar?",
+        opciones: ["Transbank", "Flow", "Mercado Pago", "Khipu", "Getnet", "Otro", "No sé aún"],
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_PASARELA },
+      },
+      // --- Otro medio ---
+      {
+        id: "medio_pago_otro",
+        tipo: "texto",
+        label: "¿Cuál?",
+        mostrarSi: { id: "medios_pago_aceptados", incluye: OPT_OTRO },
+      },
+      // --- Reglas del negocio (existentes) ---
+      {
+        id: "pagos_cobro_adelantado",
+        numero: "4.2",
+        tipo: "radio",
         label: "¿Cobras por adelantado?",
         opciones: ["No", "Sí, todo", "Parcial (abono)"],
       },
       { id: "pagos_politica_cancelacion", numero: "4.3", tipo: "textarea", label: "Política de cancelación", hint: "¿Con cuánta anticipación debe avisar? ¿Hay penalización?" },
       { id: "pagos_politica_noshow", numero: "4.4", tipo: "textarea", label: "¿Qué haces hoy cuando un cliente no llega (no-show)?", placeholder: "Ej: hoy nada; me gustaría cobrar la mitad la próxima vez..." },
       { id: "pagos_reagendamiento", numero: "4.5", tipo: "texto", label: "¿Cuántas veces permites que un cliente reagende sin costo?", placeholder: "Ej: 1 vez sin costo, después se cobra abono" },
+      // --- Confirmación transferencia (condicional compuesta: transferencia + cobro_360) ---
+      {
+        id: "confirmacion_transferencia",
+        numero: "4.6",
+        tipo: "radio",
+        label: "Para los pagos por transferencia, ¿cómo prefieres confirmarlos?",
+        opciones: [
+          "Yo confirmo manualmente por WhatsApp cuando veo la transferencia",
+          "El cliente sube el comprobante y yo lo apruebo antes de emitir boleta",
+          "Confío en el cliente: al recibir el comprobante, el bot lo asume confirmado",
+        ],
+        mostrarSi: [
+          { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
+          { id: "bloques_360_interes", incluye: OPT_COBRO_360 },
+        ],
+      },
     ],
   },
   {
@@ -131,7 +220,7 @@ export const barberBloques: Bloque[] = [
         id: "sistema_agenda_actual",
         numero: "6.1",
         tipo: "select",
-        label: "¿Qué sistema de agenda usás hoy?",
+        label: "¿Qué sistema de agenda usas hoy?",
         opciones: [
           "Reservo",
           "Fresha",
@@ -181,16 +270,16 @@ export const barberBloques: Bloque[] = [
   {
     id: 7,
     titulo: "7. Tus prioridades: Bloques 360",
-    intro: "Operaria Flow se activa por bloques. Indicá cuáles te interesan y cuál priorizás primero.",
+    intro: "Operaria Flow se activa por bloques. Indica cuáles te interesan y cuál priorizas primero.",
     preguntas: [
       {
         id: "bloques_360_interes",
         numero: "7.1",
         tipo: "checkboxes",
-        label: "¿Qué bloques 360 te interesan? Marcá todos los que apliquen.",
+        label: "¿Qué bloques 360 te interesan? Marca todos los que apliquen.",
         opciones: [
           "Agendamiento 360 — agenda + confirmaciones + recordatorios por WhatsApp",
-          "Cobro 360 — cobro automático + boleta + cierre de caja",
+          OPT_COBRO_360,
           "Reporte 360 — indicadores operativos y financieros del negocio",
           "Captación 360 — waitlist + reactivación de clientes inactivos",
         ],
@@ -199,28 +288,27 @@ export const barberBloques: Bloque[] = [
         id: "bloque_prioritario",
         numero: "7.2",
         tipo: "radio",
-        label: "De los que marcaste, ¿cuál priorizás para arrancar?",
+        label: "De los que marcaste, ¿cuál priorizas para empezar?",
         opcionesDe: "bloques_360_interes",
       },
       {
         id: "razon_prioridad",
         numero: "7.3",
         tipo: "texto",
-        label: "¿Por qué priorizás ese bloque? (1 línea)",
+        label: "¿Por qué priorizas ese bloque? (1 línea)",
         placeholder: "Máx 200 caracteres",
         maxLength: 200,
-      },
-      {
-        id: "pasarela_deseada",
-        numero: "7.4",
-        tipo: "select",
-        label: "Como elegiste Cobro 360, ¿qué pasarela de pago preferís integrar?",
-        opciones: ["Transbank", "Flow", "Mercado Pago", "Khipu", "Getnet", "Otro", "No sé aún"],
-        mostrarSi: {
-          id: "bloques_360_interes",
-          incluye: "Cobro 360 — cobro automático + boleta + cierre de caja",
-        },
       },
     ],
   },
 ];
+
+export function barberValidarAlEnviar(respuestas: Respuestas): string | null {
+  const bloques = ((respuestas.bloques_360_interes as { seleccion?: string[] } | undefined)?.seleccion) ?? [];
+  const medios = ((respuestas.medios_pago_aceptados as { seleccion?: string[] } | undefined)?.seleccion) ?? [];
+  const eligioCobro360 = bloques.includes(OPT_COBRO_360);
+  if (eligioCobro360 && medios.length === 0) {
+    return "Para activar Cobro 360 necesitamos saber qué medios de pago aceptas hoy. Vuelve al bloque 4 y marca al menos uno.";
+  }
+  return null;
+}

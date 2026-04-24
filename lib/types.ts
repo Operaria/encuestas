@@ -41,7 +41,7 @@ export interface Pregunta {
   labelMax?: string;
   columnas?: ColumnaTabla[];
   filaInicial?: Record<string, string>;
-  mostrarSi?: MostrarSi;
+  mostrarSi?: MostrarSi | MostrarSi[]; // array = AND (todas deben cumplirse)
   opcionesDe?: string; // para radio dinámico: usa la respuesta de otra pregunta como opciones
   maxLength?: number;
 }
@@ -69,6 +69,7 @@ export type Respuestas = Record<string, RespuestaValor>;
 export interface SubmitPayload {
   cliente: string;
   nombreFormateado: string;
+  negocio?: string;
   vertical?: string;
   respuestas: Respuestas;
   timestamp: string;

@@ -30,6 +30,7 @@ export default function Cuestionario({ cliente, negocio, vertical }: Props) {
   const [status, setStatus] = useState<Status>(DEFAULT_STATUS);
   const [enviando, setEnviando] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [warningMensaje, setWarningMensaje] = useState<string | null>(null);
 
   const contenidoRef = useRef<HTMLDivElement>(null);
   const bloqueDolorRef = useRef<HTMLDivElement>(null);
@@ -115,6 +116,7 @@ export default function Cuestionario({ cliente, negocio, vertical }: Props) {
         body: JSON.stringify({
           cliente,
           nombreFormateado: nombre,
+          negocio,
           vertical: vertical.id,
           respuestas,
           timestamp: new Date().toISOString(),
@@ -132,6 +134,13 @@ export default function Cuestionario({ cliente, negocio, vertical }: Props) {
   };
 
   const onEnviar = () => {
+    if (vertical.validarAlEnviar) {
+      const msg = vertical.validarAlEnviar(respuestas);
+      if (msg) {
+        setWarningMensaje(msg);
+        return;
+      }
+    }
     if (bloqueDolorVacio()) {
       setShowModal(true);
       return;
@@ -173,6 +182,25 @@ export default function Cuestionario({ cliente, negocio, vertical }: Props) {
       </div>
 
       <SaveBar status={status} enviando={enviando} onEnviar={onEnviar} />
+
+      {warningMensaje && (
+        <div className="fixed inset-0 bg-black/60 z-[1000] flex items-center justify-center p-6">
+          <div className="bg-white rounded-lg max-w-md w-full p-8 shadow-xl">
+            <h3 className="font-sans font-bold text-navy text-[20px] mb-3">
+              Falta un dato
+            </h3>
+            <p className="text-body text-[14px] mb-6">{warningMensaje}</p>
+            <div className="flex flex-wrap gap-3 justify-end">
+              <button
+                onClick={() => setWarningMensaje(null)}
+                className="bg-teal text-white rounded-md px-4 py-2 font-sans font-semibold text-[14px]"
+              >
+                Volver a revisar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-[1000] flex items-center justify-center p-6">

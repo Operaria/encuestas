@@ -1,12 +1,13 @@
-import type { Bloque } from "../types";
+import type { Bloque, Respuestas } from "../types";
 import { bloques as genericoBloques, BLOQUE_DOLOR_IDS } from "../preguntas";
-import { barberBloques } from "./barber";
+import { barberBloques, barberValidarAlEnviar } from "./barber";
 
 export interface Vertical {
   id: string;
   nombreEncuesta: string;
   bloques: Bloque[];
   dolorIds?: string[];
+  validarAlEnviar?: (respuestas: Respuestas) => string | null;
 }
 
 export const verticals: Record<string, Vertical> = {
@@ -20,6 +21,7 @@ export const verticals: Record<string, Vertical> = {
     id: "barber",
     nombreEncuesta: "Levantamiento — BarberIA360°",
     bloques: barberBloques,
+    validarAlEnviar: barberValidarAlEnviar,
   },
 };
 

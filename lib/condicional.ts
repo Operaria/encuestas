@@ -1,22 +1,31 @@
 import type { MostrarSi, Respuestas } from "./types";
 
-export function debeMostrar(mostrarSi: MostrarSi | undefined, respuestas: Respuestas): boolean {
-  if (!mostrarSi) return true;
-  const v = respuestas[mostrarSi.id];
-  if (mostrarSi.igual !== undefined) {
-    if (v === mostrarSi.igual) return true;
-    return false;
+function evaluarUna(cond: MostrarSi, respuestas: Respuestas): boolean {
+  const v = respuestas[cond.id];
+  if (cond.igual !== undefined) {
+    return v === cond.igual;
   }
-  if (mostrarSi.distintoDe !== undefined) {
-    return v !== mostrarSi.distintoDe;
+  if (cond.distintoDe !== undefined) {
+    return v !== cond.distintoDe;
   }
-  if (mostrarSi.incluye !== undefined) {
-    if (Array.isArray(v) && (v as string[]).includes(mostrarSi.incluye)) return true;
+  if (cond.incluye !== undefined) {
+    if (Array.isArray(v) && (v as string[]).includes(cond.incluye)) return true;
     if (v && typeof v === "object" && "seleccion" in (v as object)) {
       const obj = v as { seleccion: string[] };
-      return obj.seleccion.includes(mostrarSi.incluye);
+      return obj.seleccion.includes(cond.incluye);
     }
     return false;
   }
   return true;
+}
+
+export function debeMostrar(
+  mostrarSi: MostrarSi | MostrarSi[] | undefined,
+  respuestas: Respuestas,
+): boolean {
+  if (!mostrarSi) return true;
+  if (Array.isArray(mostrarSi)) {
+    return mostrarSi.every((c) => evaluarUna(c, respuestas));
+  }
+  return evaluarUna(mostrarSi, respuestas);
 }
