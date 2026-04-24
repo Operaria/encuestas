@@ -84,15 +84,14 @@ export async function POST(req: NextRequest) {
     }
 
     const resend = new Resend(apiKey);
-    const subjectPrefix = vertical.id === "barber" ? "Barber" : "Diagnóstico";
     const { error } = await resend.emails.send({
       from,
       to,
-      subject: `${subjectPrefix} completado: ${payload.nombreFormateado}`,
+      subject: `Onboarding ${vertical.id} — ${payload.nombreFormateado}`,
       html: htmlBody(payload, vertical.nombreEncuesta),
       attachments: [
         {
-          filename: `${vertical.id}-${payload.cliente}.pdf`,
+          filename: `Levantamiento-${payload.negocio || payload.cliente}.pdf`,
           content: pdfBuffer,
         },
       ],
