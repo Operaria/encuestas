@@ -8,7 +8,19 @@ export type TipoPregunta =
   | "radio"
   | "select"
   | "tabla"
-  | "boolean";
+  | "boolean"
+  | "time"
+  | "cards";
+
+export interface CardOption {
+  value: string;            // enum guardado en respuestas
+  titulo: string;           // "Solo Agenda"
+  badge?: string;           // "El primer encendido" / "+ AUDIOS"
+  setup: string;            // "CLP 60.000"
+  mrr: string;              // "CLP 45.000/mes"
+  descripcion?: string;     // "El paquete completo · 9 bloques activos"
+  destacado?: boolean;      // gradiente navy→teal para tier premium
+}
 
 export interface MostrarSi {
   id: string;
@@ -44,6 +56,9 @@ export interface Pregunta {
   mostrarSi?: MostrarSi | MostrarSi[]; // array = AND (todas deben cumplirse)
   opcionesDe?: string; // para radio dinámico: usa la respuesta de otra pregunta como opciones
   maxLength?: number;
+  cards?: CardOption[]; // para tipo "cards"
+  defaultValor?: string; // para tipo "time" u otros (ej: "21:00")
+  helper?: string; // texto debajo del input (más enfático que hint)
 }
 
 export interface Bloque {

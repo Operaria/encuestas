@@ -4,6 +4,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { PDFDiagnostico } from "@/components/PDFDiagnostico";
 import { formatDate } from "@/lib/utils";
 import { getVertical } from "@/lib/verticals";
+import { entradaLabels, OPT_NO_TENGO_GOOGLE } from "@/lib/verticals/barber";
 import type { SubmitPayload, RespuestaValor } from "@/lib/types";
 import React from "react";
 
@@ -28,12 +29,27 @@ function fmt(v: RespuestaValor | undefined): string {
 
 function htmlBody(p: SubmitPayload, nombreEncuesta: string): string {
   const r = p.respuestas;
+  const entradaEnum = (r.entrada_deseada as string | undefined) ?? "";
+  const entradaLabel = entradaEnum ? (entradaLabels[entradaEnum] ?? entradaEnum) : "—";
+  const requiereCreacionGoogle = r.tecnico_google_account === OPT_NO_TENGO_GOOGLE;
   const resumen = p.vertical === "barber"
     ? `
       <p><strong style="color:#0F1E3A;">Contacto:</strong><br>${fmt(r.id_nombre)} — ${fmt(r.id_telefono)}</p>
+      <p><strong style="color:#0F1E3A;">Entrada elegida:</strong> ${entradaLabel}</p>
       <p><strong style="color:#0F1E3A;">Dolor principal:</strong><br>${fmt(r.contexto_principal_dolor)}</p>
       <p><strong style="color:#0F1E3A;">Volumen diario:</strong> ${fmt(r.contexto_volumen_diario)}</p>
-      <p><strong style="color:#0F1E3A;">Delegaría primero:</strong><br>${fmt(r.contexto_delegar)}</p>`
+      <p><strong style="color:#0F1E3A;">Delegaría primero:</strong><br>${fmt(r.contexto_delegar)}</p>
+      <hr style="border:none;border-top:1px solid #D6D2CB;margin:14px 0;">
+      <p style="color:#1B4D4A;font-size:13px;"><strong>Setup checklist:</strong></p>
+      <ul style="color:#3D4450;font-size:13px;line-height:1.6;">
+        <li>WhatsApp Business: ${fmt(r.tiene_whatsapp_business)}</li>
+        <li>Número WhatsApp deseado: ${fmt(r.numero_whatsapp_dedicado)}</li>
+        <li>Google account: ${fmt(r.tecnico_google_account)}${requiereCreacionGoogle ? " <strong style='color:#E8A838;'>· requiere_creacion_google: TRUE</strong>" : ""}</li>
+        ${entradaEnum === "barber360" ? `<li>MercadoPago: ${fmt(r.tiene_mercadopago)}</li><li>Google Business Profile: ${fmt(r.tiene_google_business_profile)}</li>` : ""}
+        <li>Instagram Business: ${fmt(r.tiene_instagram_business)}</li>
+        <li>Email contador: ${fmt(r.email_contador) || "—"}</li>
+        <li>Hora cierre nocturno: ${fmt(r.hora_cierre_nocturno)}</li>
+      </ul>`
     : `
       <p><strong style="color:#0F1E3A;">Nombre / cargo:</strong><br>${fmt(r.p1)}</p>
       <p><strong style="color:#0F1E3A;">Rubro:</strong><br>${fmt(r.p2)}</p>

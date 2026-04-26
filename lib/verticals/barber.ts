@@ -1,11 +1,54 @@
-import type { Bloque, Respuestas } from "../types";
+import type { Bloque, Respuestas, CardOption } from "../types";
+
+// Enums entrada_deseada (Bloque 7 v2)
+export const ENTRADA_SOLO_AGENDA = "solo_agenda";
+export const ENTRADA_AGENDA_OPERACION = "agenda_operacion";
+export const ENTRADA_BARBER360 = "barber360";
+
+// Mapping enum → label legible (PDF, email, Sheet humano)
+export const entradaLabels: Record<string, string> = {
+  [ENTRADA_SOLO_AGENDA]: "Solo Agenda",
+  [ENTRADA_AGENDA_OPERACION]: "Agenda + Operación",
+  [ENTRADA_BARBER360]: "BarberIA360° (paquete completo)",
+};
+
+// Label exacto de la opción "No tengo cuenta Google" (Bloque 6)
+// — el orquestador deriva flag requiere_creacion_google de aquí
+export const OPT_NO_TENGO_GOOGLE = "No tengo cuenta Google — Operaria me la crea como parte del setup";
+
+const cardsEntradaDeseada: CardOption[] = [
+  {
+    value: ENTRADA_SOLO_AGENDA,
+    titulo: "Solo Agenda",
+    badge: "El primer encendido",
+    setup: "Setup CLP 60.000",
+    mrr: "MRR CLP 45.000/mes",
+    descripcion: "Tu Agente agenda, recuerda y confirma.",
+  },
+  {
+    value: ENTRADA_AGENDA_OPERACION,
+    titulo: "Agenda + Operación",
+    badge: "+ AUDIOS",
+    setup: "Setup CLP 120.000",
+    mrr: "MRR CLP 60.000/mes",
+    descripcion: "Sumas comandos del dueño, audios, lista de espera y cierre nocturno.",
+  },
+  {
+    value: ENTRADA_BARBER360,
+    titulo: "BarberIA360°",
+    badge: "+ COBRO + REPORTES + VISIÓN",
+    setup: "Setup CLP 180.000",
+    mrr: "MRR CLP 90.000/mes",
+    descripcion: "El paquete completo · 9 bloques activos. Cobro digital, boletas, métricas mensuales.",
+    destacado: true,
+  },
+];
 
 // Labels canónicos (se usan como valores guardados y como claves de mostrarSi)
 const OPT_TRANSFERENCIA = "Transferencia bancaria";
 const OPT_PASARELA = "Pasarela de pago online — Transbank, Flow, Mercado Pago, Khipu, Getnet";
 const OPT_EFECTIVO = "Efectivo";
 const OPT_OTRO = "Otro";
-const OPT_COBRO_360 = "Cobro 360 — cobro automático + boleta + cierre de caja";
 
 export const barberBloques: Bloque[] = [
   {
@@ -176,12 +219,20 @@ export const barberBloques: Bloque[] = [
         opciones: ["No", "Sí, todo", "Parcial (abono)"],
       },
       { id: "pagos_politica_cancelacion", numero: "4.3", tipo: "textarea", label: "Política de cancelación", hint: "¿Con cuánta anticipación debe avisar? ¿Hay penalización?" },
-      { id: "pagos_politica_noshow", numero: "4.4", tipo: "textarea", label: "¿Qué haces hoy cuando un cliente no llega (no-show)?", placeholder: "Ej: hoy nada; me gustaría cobrar la mitad la próxima vez..." },
+      { id: "pagos_politica_noshow", numero: "4.4", tipo: "textarea", label: "¿Qué haces hoy con los clientes que no llegan a su cita?", placeholder: "Ej: hoy nada; me gustaría cobrar la mitad la próxima vez..." },
       { id: "pagos_reagendamiento", numero: "4.5", tipo: "texto", label: "¿Cuántas veces permites que un cliente reagende sin costo?", placeholder: "Ej: 1 vez sin costo, después se cobra abono" },
-      // --- Confirmación transferencia (condicional compuesta: transferencia + cobro_360) ---
+      {
+        id: "hora_cierre_nocturno",
+        numero: "4.6",
+        tipo: "time",
+        label: "¿A qué hora prefieres recibir tu cierre de caja diario por WhatsApp?",
+        hint: "Default 21:00. Lo puedes ajustar después con un mensaje a tu Agente.",
+        defaultValor: "21:00",
+      },
+      // --- Confirmación transferencia (condicional compuesta: transferencia + entrada=barber360) ---
       {
         id: "confirmacion_transferencia",
-        numero: "4.6",
+        numero: "4.7",
         tipo: "radio",
         label: "Para los pagos por transferencia, ¿cómo prefieres confirmarlos?",
         opciones: [
@@ -191,7 +242,7 @@ export const barberBloques: Bloque[] = [
         ],
         mostrarSi: [
           { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
-          { id: "bloques_360_interes", incluye: OPT_COBRO_360 },
+          { id: "entrada_deseada", igual: ENTRADA_BARBER360 },
         ],
       },
     ],
@@ -255,7 +306,7 @@ export const barberBloques: Bloque[] = [
       {
         id: "tecnico_google_account", numero: "6.4", tipo: "radio",
         label: "¿Tienes cuenta de Google (Gmail) del negocio?",
-        opciones: ["Sí, del negocio", "Uso mi Gmail personal", "No tengo"],
+        opciones: ["Sí, del negocio", "Uso mi Gmail personal", OPT_NO_TENGO_GOOGLE],
       },
       { id: "tecnico_google_email", numero: "6.5", tipo: "texto", label: "Email (si lo usas para el negocio)", placeholder: "negocio@gmail.com" },
       {
@@ -265,50 +316,102 @@ export const barberBloques: Bloque[] = [
       },
       { id: "tecnico_pasarela", numero: "6.7", tipo: "texto", label: "¿Tienes pasarela de pago? (Mercado Pago, Flow, Transbank...)", placeholder: "Ej: Mercado Pago / No tengo" },
       { id: "tecnico_otras_herramientas", numero: "6.8", tipo: "textarea", label: "¿Qué otras herramientas usas hoy para el negocio?", placeholder: "Ej: Excel para cuentas, Instagram para promoción..." },
+      // --- Credenciales v2 (stack v3.1) ---
+      {
+        id: "tiene_whatsapp_business", numero: "6.9", tipo: "radio",
+        label: "¿Tienes WhatsApp Business activo en tu negocio?",
+        hint: "No te preocupes si no tienes — lo creamos por ti como parte del setup.",
+        opciones: ["Sí", "No", "No sé"],
+      },
+      {
+        id: "numero_whatsapp_dedicado", numero: "6.10", tipo: "radio",
+        label: "¿En qué número de WhatsApp quieres que opere tu Agente?",
+        hint: "Si no tienes o prefieres separar tu personal, te entregamos un chip dedicado Operaria.",
+        opciones: [
+          "Sí, mi número actual",
+          "No, prefiero que me den uno nuevo",
+          "No tengo número aún",
+        ],
+      },
+      {
+        id: "tiene_mercadopago", numero: "6.11", tipo: "radio",
+        label: "¿Tienes cuenta MercadoPago activa para tu negocio?",
+        hint: "Si no tienes, te ayudamos a crearla. La cuenta queda a tu nombre, no de Operaria.",
+        opciones: ["Sí", "No", "No sé"],
+        mostrarSi: { id: "entrada_deseada", igual: ENTRADA_BARBER360 },
+      },
+      {
+        id: "tiene_google_business_profile", numero: "6.12", tipo: "radio",
+        label: "¿Tu negocio tiene perfil de Google Business (aparece cuando alguien te busca en Google Maps)?",
+        hint: "Si no tienes, te ayudamos a crearlo. Es gratis y permite recibir reseñas con un click.",
+        opciones: ["Sí", "No", "No sé"],
+        mostrarSi: { id: "entrada_deseada", igual: ENTRADA_BARBER360 },
+      },
+      {
+        id: "tiene_instagram_business", numero: "6.13", tipo: "radio",
+        label: "¿Tu negocio tiene cuenta Instagram Business?",
+        hint: "Opcional. Si la conectas, tu Agente también responde por Instagram.",
+        opciones: ["Sí", "No", "No quiero conectar Instagram"],
+      },
+      {
+        id: "email_contador", numero: "6.14", tipo: "texto",
+        label: "¿Quieres que tu contador tenga acceso al respaldo de cierres diarios?",
+        hint: "Si dejas su email, configuramos acceso de lectura al Sheet Cierres 360 en tu Drive. Puedes agregarlo o quitarlo después.",
+        placeholder: "contador@ejemplo.cl (opcional)",
+      },
     ],
   },
   {
     id: 7,
-    titulo: "7. Tus prioridades: Bloques 360",
-    intro: "Operaria Flow se activa por bloques. Indica cuáles te interesan y cuál priorizas primero.",
+    titulo: "7. ¿Cómo quieres encender tu Agente?",
+    intro: "Tres entradas progresivas. Puedes empezar con una y subir cuando quieras.",
     preguntas: [
       {
-        id: "bloques_360_interes",
+        id: "entrada_deseada",
         numero: "7.1",
-        tipo: "checkboxes",
-        label: "¿Qué bloques 360 te interesan? Marca todos los que apliquen.",
-        opciones: [
-          "Agendamiento 360 — agenda + confirmaciones + recordatorios por WhatsApp",
-          OPT_COBRO_360,
-          "Reporte 360 — indicadores operativos y financieros del negocio",
-          "Captación 360 — waitlist + reactivación de clientes inactivos",
-        ],
-      },
-      {
-        id: "bloque_prioritario",
-        numero: "7.2",
-        tipo: "radio",
-        label: "De los que marcaste, ¿cuál priorizas para empezar?",
-        opcionesDe: "bloques_360_interes",
-      },
-      {
-        id: "razon_prioridad",
-        numero: "7.3",
-        tipo: "texto",
-        label: "¿Por qué priorizas ese bloque? (1 línea)",
-        placeholder: "Máx 200 caracteres",
-        maxLength: 200,
+        tipo: "cards",
+        label: "Elige tu entrada",
+        cards: cardsEntradaDeseada,
+        helper: "Puedes empezar con una entrada y subir cuando quieras. El upgrade no cobra setup nuevo.",
       },
     ],
   },
 ];
 
 export function barberValidarAlEnviar(respuestas: Respuestas): string | null {
-  const bloques = ((respuestas.bloques_360_interes as { seleccion?: string[] } | undefined)?.seleccion) ?? [];
+  const entrada = (respuestas.entrada_deseada as string | undefined) ?? "";
   const medios = ((respuestas.medios_pago_aceptados as { seleccion?: string[] } | undefined)?.seleccion) ?? [];
-  const eligioCobro360 = bloques.includes(OPT_COBRO_360);
-  if (eligioCobro360 && medios.length === 0) {
-    return "Para activar Cobro 360 necesitamos saber qué medios de pago aceptas hoy. Vuelve al bloque 4 y marca al menos uno.";
+
+  if (!entrada) {
+    return "Elige una entrada (Bloque 7) para enviar tu encuesta.";
+  }
+
+  // Campos de credenciales required en v2
+  if (!respuestas.tiene_whatsapp_business) {
+    return "Cuéntanos si tienes WhatsApp Business (Bloque 6).";
+  }
+  if (!respuestas.tecnico_google_account) {
+    return "Cuéntanos si tienes cuenta Google (Bloque 6).";
+  }
+  if (!respuestas.numero_whatsapp_dedicado) {
+    return "Cuéntanos en qué número quieres que opere tu Agente (Bloque 6).";
+  }
+
+  // email_contador opcional pero si está debe ser válido
+  const emailContador = (respuestas.email_contador as string | undefined)?.trim() ?? "";
+  if (emailContador && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailContador)) {
+    return "El email del contador no parece válido. Revísalo o déjalo vacío.";
+  }
+
+  // hora_cierre_nocturno formato HH:MM
+  const hora = (respuestas.hora_cierre_nocturno as string | undefined) ?? "";
+  if (hora && !/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) {
+    return "La hora de cierre debe estar en formato HH:MM (24h).";
+  }
+
+  // Si eligió BarberIA360° (incluye Cobro 360) necesita medios de pago
+  if (entrada === ENTRADA_BARBER360 && medios.length === 0) {
+    return "Para BarberIA360° necesitamos saber qué medios de pago aceptas hoy. Vuelve al bloque 4 y marca al menos uno.";
   }
   return null;
 }

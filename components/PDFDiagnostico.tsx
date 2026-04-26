@@ -121,7 +121,16 @@ export function PDFDiagnostico({ nombre, negocio, fecha, bloques, respuestas, ti
                   </View>
                 );
               }
-              const txt = formatRespuesta(respuestas[p.id]);
+              let txt: string;
+              if (p.tipo === "cards" && p.cards) {
+                const v = respuestas[p.id] as string | undefined;
+                const card = p.cards.find((c) => c.value === v);
+                txt = card
+                  ? `${card.titulo} — ${card.setup} · ${card.mrr}`
+                  : "";
+              } else {
+                txt = formatRespuesta(respuestas[p.id]);
+              }
               return (
                 <View key={p.id} wrap={false}>
                   <Text style={s.preguntaLabel}>

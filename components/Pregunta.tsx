@@ -211,7 +211,101 @@ function renderInput(
   if (pregunta.tipo === "tabla") {
     return <Tabla pregunta={pregunta} valor={valor as TablaFila[] | undefined} onChange={onChange} />;
   }
+  if (pregunta.tipo === "time") {
+    return (
+      <input
+        type="time"
+        className={inputBase}
+        value={(valor as string) ?? pregunta.defaultValor ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    );
+  }
+  if (pregunta.tipo === "cards") {
+    return <Cards pregunta={pregunta} valor={valor as string | undefined} onChange={onChange} />;
+  }
   return null;
+}
+
+function Cards({
+  pregunta,
+  valor,
+  onChange,
+}: {
+  pregunta: P;
+  valor: string | undefined;
+  onChange: (v: RespuestaValor) => void;
+}) {
+  const cards = pregunta.cards ?? [];
+  const selected = valor ?? "";
+  return (
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+        {cards.map((card) => {
+          const isSelected = selected === card.value;
+          if (card.destacado) {
+            return (
+              <button
+                key={card.value}
+                type="button"
+                onClick={() => onChange(card.value)}
+                aria-pressed={isSelected}
+                className={`text-left p-5 rounded-lg border-2 transition-all bg-gradient-to-br from-navy to-petrol text-white ${
+                  isSelected
+                    ? "border-teal shadow-xl ring-2 ring-teal"
+                    : "border-transparent hover:border-teal/40"
+                }`}
+              >
+                {card.badge && (
+                  <span className="font-mono text-[10px] uppercase tracking-[2px] text-teal block mb-2">
+                    {card.badge}
+                  </span>
+                )}
+                <h3 className="font-sans font-bold text-white text-[20px]">{card.titulo}</h3>
+                <div className="mt-3 space-y-1">
+                  <div className="font-mono text-[12px] text-teal">{card.setup}</div>
+                  <div className="font-mono text-[12px] text-teal">{card.mrr}</div>
+                </div>
+                {card.descripcion && (
+                  <p className="text-[13px] text-offwhite/90 mt-3 leading-relaxed">{card.descripcion}</p>
+                )}
+              </button>
+            );
+          }
+          return (
+            <button
+              key={card.value}
+              type="button"
+              onClick={() => onChange(card.value)}
+              aria-pressed={isSelected}
+              className={`text-left p-5 rounded-lg border-2 transition-all bg-white ${
+                isSelected
+                  ? "border-teal shadow-lg ring-2 ring-teal/40"
+                  : "border-border hover:border-teal/60"
+              }`}
+            >
+              {card.badge && (
+                <span className="font-mono text-[10px] uppercase tracking-[2px] text-teal block mb-2">
+                  {card.badge}
+                </span>
+              )}
+              <h3 className="font-sans font-bold text-navy text-[20px]">{card.titulo}</h3>
+              <div className="mt-3 space-y-1">
+                <div className="font-mono text-[12px] text-petrol">{card.setup}</div>
+                <div className="font-mono text-[12px] text-petrol">{card.mrr}</div>
+              </div>
+              {card.descripcion && (
+                <p className="text-[13px] text-body mt-3 leading-relaxed">{card.descripcion}</p>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {pregunta.helper && (
+        <p className="text-[13px] text-muted mt-4 italic">{pregunta.helper}</p>
+      )}
+    </div>
+  );
 }
 
 function Tabla({
