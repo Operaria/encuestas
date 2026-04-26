@@ -4,13 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadRespuestas, saveRespuestas, clearRespuestas } from "@/lib/storage";
 import type { Respuestas, RespuestaValor } from "@/lib/types";
-import type { Vertical } from "@/lib/verticals";
+import { getVertical } from "@/lib/verticals";
 import { slugToName, formatDate } from "@/lib/utils";
 import Portada from "./Portada";
 import Bloque from "./Bloque";
 import SaveBar from "./SaveBar";
 
-interface Props { cliente: string; negocio: string; vertical: Vertical }
+interface Props { cliente: string; negocio: string; verticalId: string }
 
 type Status = { tone: "muted" | "teal" | "warm"; text: string };
 
@@ -19,8 +19,9 @@ const DEFAULT_STATUS: Status = {
   text: "Completa a tu ritmo. Cuando termines, haz clic en Enviar.",
 };
 
-export default function Cuestionario({ cliente, negocio, vertical }: Props) {
+export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
   const router = useRouter();
+  const vertical = useMemo(() => getVertical(verticalId), [verticalId]);
   const nombre = useMemo(() => slugToName(cliente), [cliente]);
   const storageSlug = `${vertical.id}-${cliente}`;
   const [fecha, setFecha] = useState("");
@@ -41,11 +42,19 @@ export default function Cuestionario({ cliente, negocio, vertical }: Props) {
   useEffect(() => {
     setFecha(formatDate(new Date()));
     const data = loadRespuestas(storageSlug);
-    if (data) {
-      setRespuestas(data.respuestas);
-      setSavedAt(data.savedAt);
+    const baseRespuestas: Respuestas = data?.respuestas ?? {};
+    // Inyectar defaults (ej: hora_cierre_nocturno = "21:00") si no están seteados
+    const conDefaults: Respuestas = { ...baseRespuestas };
+    for (const b of vertical.bloques) {
+      for (const p of b.preguntas) {
+        if (p.defaultValor && conDefaults[p.id] === undefined) {
+          conDefaults[p.id] = p.defaultValor;
+        }
+      }
     }
-  }, [storageSlug]);
+    setRespuestas(conDefaults);
+    if (data) setSavedAt(data.savedAt);
+  }, [storageSlug, vertical]);
 
   useEffect(() => {
     if (!dirty) return;
