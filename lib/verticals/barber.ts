@@ -86,7 +86,7 @@ export const barberBloques: Bloque[] = [
   {
     id: 2,
     titulo: "2. Catálogo de servicios",
-    subtitulo: "Cada servicio que ofreces, cuánto demora y cuánto cobras. Sin esto el bot no puede agendar.",
+    subtitulo: "Cada servicio que ofreces, cuánto demora y cuánto cobras. Sin esto tu Agente no puede agendar.",
     preguntas: [
       {
         id: "reserva_gratuita",
@@ -128,7 +128,7 @@ export const barberBloques: Bloque[] = [
       {
         id: "equipo_agenda_modo", numero: "3.6", tipo: "radio",
         label: "¿Cómo ordenas la agenda?",
-        hint: "Esto define cómo el bot ofrece horas disponibles.",
+        hint: "Esto define cómo tu Agente ofrece horas disponibles.",
         opciones: [
           "Por segmentos fijos (ej: bloques de 30 min predefinidos)",
           "Abierta, se va llenando según la duración del servicio agendado",
@@ -238,7 +238,7 @@ export const barberBloques: Bloque[] = [
         opciones: [
           "Yo confirmo manualmente por WhatsApp cuando veo la transferencia",
           "El cliente sube el comprobante y yo lo apruebo antes de emitir boleta",
-          "Confío en el cliente: al recibir el comprobante, el bot lo asume confirmado",
+          "Confío en el cliente: al recibir el comprobante, mi Agente lo asume confirmado",
         ],
         mostrarSi: [
           { id: "medios_pago_aceptados", incluye: OPT_TRANSFERENCIA },
@@ -249,8 +249,8 @@ export const barberBloques: Bloque[] = [
   },
   {
     id: 5,
-    titulo: "5. Voz y tono del bot",
-    subtitulo: "El bot se presenta como parte de tu equipo, con nombre propio",
+    titulo: "5. Voz y tono de tu Agente",
+    subtitulo: "Tu Agente se presenta como parte de tu equipo, con nombre propio",
     preguntas: [
       {
         id: "voz_trato", numero: "5.1", tipo: "radio",
@@ -258,9 +258,9 @@ export const barberBloques: Bloque[] = [
         opciones: ["Tú, informal y cercano", "Tú, pero más formal", "Usted, formal"],
       },
       { id: "voz_frases_tipicas", numero: "5.2", tipo: "textarea", label: "Frases o muletillas típicas que uses con tus clientes", hint: "Cómo saludas, cómo confirmas, cómo te despides.", placeholder: "Ej: \"Listo compa\", \"Te espero\", \"Dale, pasa\"" },
-      { id: "voz_nombre_bot", numero: "5.3", tipo: "texto", label: "¿Qué nombre quieres para el bot?", hint: "Se presentará como parte del equipo: \"Hola, soy [Nombre] de BarberIA360°\".", placeholder: "Ej: Juan" },
+      { id: "voz_nombre_bot", numero: "5.3", tipo: "texto", label: "¿Qué nombre quieres para tu Agente?", hint: "Se presentará como parte del equipo: \"Hola, soy [Nombre] de BarberIA360°\".", placeholder: "Ej: Juan" },
       { id: "voz_tono", numero: "5.4", tipo: "texto", label: "Tono general en una frase", placeholder: "Ej: Cercano, relajado, de barrio" },
-      { id: "voz_restricciones", numero: "5.5", tipo: "textarea", label: "¿Qué NO quieres que diga o cómo NO quieres que suene?", placeholder: "Ej: Nada formal, no \"estimado\", no emojis..." },
+      { id: "voz_restricciones", numero: "5.5", tipo: "textarea", label: "¿Qué NO quieres que diga tu Agente o cómo NO quieres que suene?", placeholder: "Ej: Nada formal, no \"estimado\", no emojis..." },
     ],
   },
   {
