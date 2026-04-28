@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Propuesta BarberIA360° — v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0F1E3A;
+    --petrol: #1B4D4A;
+    --teal: #4A9B93;
+    --offwhite: #F2F0EB;
+    --muted: #9E9C96;
+    --body-color: #3D4450;
+    --row-odd: #F2F0EB;
+    --row-even: #FAFAF8;
+    --border: #D6D2CB;
+    --chat-bg: #F2F0EB;
+    --chat-bubble-user: #D9F2C4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--offwhite);
+    color: var(--body-color);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+  }
+  .controls button {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .controls button.undo { background: var(--petrol); }
+  .controls button:hover { opacity: 0.88; }
+
+  .cover {
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 60px;
+    page-break-after: always;
+  }
+  .cover .brand {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--offwhite);
+    margin-bottom: 4px;
+  }
+  .cover .brand .grados { color: var(--teal); }
+  .cover .brand-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .cover .subtitle {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 13px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .cover .sep {
+    width: 120px;
+    border: none;
+    border-top: 1.5px solid var(--teal);
+    margin: 0 auto 40px;
+  }
+  .cover .title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .cover .desc {
+    font-size: 17px;
+    color: var(--teal);
+    margin-bottom: 56px;
+  }
+  .cover .meta-line {
+    border-top: 1px solid var(--petrol);
+    padding-top: 16px;
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cover .meta-line .label {
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
+  .cover .meta-line .value {
+    font-family: 'DM Mono', monospace;
+    color: #fff;
+    font-size: 12px;
+  }
+
+  .content {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--navy);
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--teal);
+  }
+  h1:first-child { margin-top: 0; }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--petrol);
+    margin: 32px 0 12px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 17px;
+    margin: 20px 0 8px;
+  }
+
+  p { margin-bottom: 16px; }
+
+  .claim {
+    font-style: italic;
+    color: var(--petrol);
+    font-size: 16px;
+    margin: 24px 0;
+  }
+
+  .data-block {
+    border-left: 3px solid var(--teal);
+    padding: 4px 0 4px 16px;
+    margin: 20px 0;
+  }
+  .data-block .data-line {
+    font-family: 'DM Mono', monospace;
+    color: var(--petrol);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  /* === AGENTE STAR === */
+  .agente-star {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--petrol) 100%);
+    color: #fff;
+    padding: 36px 32px;
+    border-radius: 6px;
+    margin: 28px 0;
+    text-align: center;
+  }
+  .agente-star .agente-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .agente-star h3 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+  .agente-star .agente-desc {
+    color: #d8dfee;
+    font-size: 15.5px;
+    line-height: 1.7;
+    margin-bottom: 0;
+  }
+  .agente-skills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 26px;
+  }
+  .agente-skill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(74, 155, 147, 0.3);
+    padding: 16px 14px;
+    border-radius: 4px;
+    text-align: left;
+  }
+  .agente-skill .skill-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--teal);
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .agente-skill .skill-desc {
+    color: #d8dfee;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  /* === BURBUJAS CHAT === */
+  .chat {
+    background: var(--chat-bg);
+    border-radius: 8px;
+    padding: 16px 14px;
+    margin: 18px 0;
+    max-width: 460px;
+    border: 1px solid var(--border);
+  }
+  .chat-header {
+    background: var(--petrol);
+    color: #fff;
+    margin: -16px -14px 14px;
+    padding: 12px 14px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #fff;
+    font-weight: 600;
+  }
+  .chat-header-info {
+    flex: 1;
+    line-height: 1.3;
+  }
+  .chat-header-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+  }
+  .chat-header-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    color: var(--teal);
+  }
+  .chat-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--navy);
+    max-width: 85%;
+  }
+  .bubble-bot {
+    background: #fff;
+    border: 1px solid var(--border);
+  }
+  .bubble-user {
+    background: var(--chat-bubble-user);
+    margin-left: auto;
+    text-align: left;
+  }
+  .bubble-time {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+
+  /* === ESCENAS === */
+  .escena {
+    background: #fff;
+    border-left: 4px solid var(--teal);
+    padding: 20px 24px;
+    margin: 18px 0;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(15, 30, 58, 0.04);
+  }
+  .escena .escena-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .escena .escena-texto {
+    font-family: 'Syne', sans-serif;
+    color: var(--navy);
+    font-size: 15.5px;
+    line-height: 1.65;
+  }
+  .escena .escena-texto em { color: var(--petrol); }
+  .escena .nivel-tag {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-family: 'DM Mono', monospace;
+    color: var(--petrol);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* === ENTRADAS DEL PRODUCTO === */
+  .producto-destacado {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--petrol) 100%);
+    color: #fff;
+    padding: 28px 32px;
+    border-radius: 6px;
+    margin: 20px 0 28px;
+    text-align: center;
+  }
+  .producto-destacado .producto-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .producto-destacado h3 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .producto-destacado .producto-claim {
+    color: var(--teal);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .producto-destacado .producto-pricing {
+    background: rgba(255,255,255,0.08);
+    padding: 12px 18px;
+    border-radius: 4px;
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+
+  .entrada {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--teal);
+    padding: 24px 28px;
+    margin: 18px 0;
+    border-radius: 4px;
+  }
+  .entrada .entrada-titulo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .entrada .entrada-claim {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .entrada .entrada-pricing {
+    background: var(--offwhite);
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    font-family: 'DM Mono', monospace;
+    color: var(--navy);
+    font-size: 13px;
+    border-radius: 3px;
+  }
+  .entrada .entrada-desc {
+    font-size: 15px;
+    color: var(--body-color);
+    margin-bottom: 16px;
+  }
+  .entrada ul { margin: 0 0 16px 20px; padding: 0; }
+  .entrada ul li {
+    margin-bottom: 6px;
+    font-size: 14.5px;
+    color: var(--body-color);
+  }
+  .entrada .entrada-impacto {
+    background: var(--offwhite);
+    padding: 12px 16px;
+    border-left: 3px solid var(--petrol);
+    font-style: italic;
+    color: var(--navy);
+    font-size: 14.5px;
+    margin-top: 14px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  thead th {
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    padding: 10px 14px;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(odd) td { background: var(--row-even); }
+  tbody tr:nth-child(even) td { background: var(--row-odd); }
+  td.col-label { font-weight: 600; color: var(--navy); }
+  td.col-num {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    color: var(--teal);
+    border-right: 2px solid var(--teal);
+    width: 50px;
+  }
+  td.col-duration {
+    font-family: 'DM Mono', monospace;
+    color: var(--petrol);
+    font-size: 13px;
+  }
+  .step-title { font-weight: 700; color: var(--navy); }
+  .step-desc { color: var(--body-color); font-size: 13px; }
+
+  .ph {
+    background: #FFF5CC;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.92em;
+    color: var(--navy);
+  }
+
+  .pasos-manual {
+    background: var(--row-odd);
+    padding: 18px 22px;
+    border-radius: 6px;
+    margin: 14px 0 22px;
+  }
+  .pasos-manual ol { margin: 0; padding-left: 22px; }
+  .pasos-manual ol li {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 6px 0;
+  }
+
+  .anexo-titulo {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 18px;
+    margin-top: 50px;
+    margin-bottom: 0;
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .closing {
+    margin-top: 48px;
+    text-align: center;
+    padding: 24px 0;
+    border-top: 1.5px solid var(--teal);
+    border-bottom: 1.5px solid var(--teal);
+  }
+  .closing .mission {
+    font-style: italic;
+    color: var(--navy);
+    font-size: 18px;
+  }
+  .contact { margin-top: 40px; }
+
+  [contenteditable="true"]:focus {
+    outline: 2px dashed var(--teal);
+    outline-offset: 2px;
+    background: rgba(74, 155, 147, 0.04);
+  }
+  [contenteditable="true"]:hover {
+    background: rgba(74, 155, 147, 0.02);
+  }
+
+  @media print {
+    body { background: #fff; }
+    .cover { page-break-after: always; }
+    .content { padding: 40px 20px; }
+    .controls { display: none; }
+    [contenteditable="true"]:focus,
+    [contenteditable="true"]:hover {
+      outline: none;
+      background: transparent;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button onclick="copyFinal()">Copiar texto final</button>
+  <button class="undo" onclick="undoAll()">Deshacer todos los cambios</button>
+</div>
+
+<div id="doc" contenteditable="true">
+
+<!-- ==================== PORTADA ==================== -->
+<div class="cover">
+  <div class="brand-tag">Operaria Flow</div>
+  <div class="brand">BarberIA<span class="grados">360°</span></div>
+  <div class="subtitle">Manos a la ópera</div>
+  <hr class="sep">
+  <div class="title">Propuesta para <span class="ph">{{Nombre del negocio}}</span></div>
+  <div class="desc">Encendemos tu operación para devolverte el tiempo</div>
+  <div class="meta-line">
+    <span><span class="label">Fecha</span> <span class="value ph">{{DD/MM/AAAA}}</span></span>
+    <span><span class="label">Cliente</span> <span class="value ph">{{Nombre del dueño}}</span></span>
+    <span><span class="label">Local</span> <span class="value ph">{{Ciudad}}</span></span>
+  </div>
+</div>
+
+<!-- ==================== CONTENIDO ==================== -->
+<div class="content">
+
+  <!-- ============ SECCIÓN 1 ============ -->
+  <h1>1. Qué es BarberIA360°</h1>
+  <p>BarberIA360° es la marca de Operaria Flow para barberías. No es un software nuevo que tengas que aprender ni una aplicación que descargar. Es un agente que se instala sobre las herramientas que tu negocio ya tiene (WhatsApp, Google Calendar, medios de pago) y las conecta para que tu operación funcione sola.</p>
+  <p>Tu <em>Agente Flow</em> responde consultas, agenda citas, recuerda a tus clientes, gestiona cobros y registra tu operación diaria, sin que tengas que intervenir en cada paso. Se adapta a tu forma de trabajar — no al revés.</p>
+  <p>Trabajamos sobre las herramientas que ya tienes — y si te falta alguna, nosotros la creamos y activamos. Usamos Google Calendar como agenda: simple, gratis y conectado con todo lo que ya usas.</p>
+  <p class="claim">No vendemos tecnología. Te devolvemos el tiempo que hoy gastas coordinando lo que ya haces todos los días.</p>
+
+  <!-- ============ TU AGENTE, NO UN BOT ============ -->
+  <div class="agente-star">
+    <div class="agente-tag">Tu agente, no un bot</div>
+    <h3>Conoce a tu <em>Agente Flow</em></h3>
+    <p class="agente-desc">No es un chatbot genérico que responde con plantillas. Es un agente configurado sobre <strong>tu</strong> negocio, con memoria de <strong>tus</strong> clientes y la voz de <strong>tu</strong> marca. Tú le pones el nombre que quieras al activarlo. Y tiene tres capacidades reales que ningún bot tradicional ofrece:</p>
+    <div class="agente-skills">
+      <div class="agente-skill">
+        <div class="skill-titulo">Reconoce a tus clientes</div>
+        <div class="skill-desc">Sabe quién es habitual, qué servicio prefiere, cuándo viene normalmente. No los trata como nuevos cada vez.</div>
+      </div>
+      <div class="agente-skill">
+        <div class="skill-titulo">Habla como tu negocio</div>
+        <div class="skill-desc">Si tú tuteas, él tutea. Si dices "amigo" al final, él también. No suena a robot — suena a tu local.</div>
+      </div>
+      <div class="agente-skill">
+        <div class="skill-titulo">Mejora con el tiempo</div>
+        <div class="skill-desc">Mes 1 cubre lo básico. Mes 2-3 entiende tus excepciones. Mes 3+ identifica patrones que tú no veías.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECCIÓN 2 ============ -->
+  <h1>2. Imagina esto</h1>
+  <p>Tres escenas que describen cómo se siente tener tu <em>Agente Flow</em> trabajando. No es cómo funciona el sistema por dentro — es cómo cambia tu día.</p>
+
+  <div class="escena">
+    <div class="escena-tag">Escena 01 — Agendar mientras duermes</div>
+    <div class="escena-texto">Son las 23:40. Un cliente nuevo te escribe por WhatsApp: <em>«¿Tienes hora mañana?»</em>. Tú estás durmiendo. Tu Agente responde en segundos, consulta tu agenda real, ofrece tres horarios disponibles, agenda y confirma. Cuando despiertas, hay una cita nueva para mañana. <em>Tú no hiciste nada.</em></div>
+
+    <div class="chat">
+      <div class="chat-header">
+        <div class="chat-avatar">DG</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Diego González</div>
+          <div class="chat-header-sub">23:40</div>
+        </div>
+      </div>
+      <div class="bubble bubble-user">Hola, soy Diego. ¿Tienes hora mañana en la mañana para corte y barba?</div>
+      <div class="bubble bubble-bot">¡Hola Diego! ¿Te acomoda algún horario en particular y prefieres a algún barbero?</div>
+      <div class="bubble bubble-user">Cualquiera, idealmente entre 10 y 12.</div>
+      <div class="bubble bubble-bot">Perfecto. Mañana entre 10 y 12 tengo 10:00 con Felipe o 11:30 con Francisco. ¿Cuál te acomoda?</div>
+      <div class="bubble bubble-user">10:00 está bien</div>
+      <div class="bubble bubble-bot">Listo, Diego. Cita confirmada mañana 10:00 con Felipe · corte + barba ✂️</div>
+      <div class="chat-tag">Operaria Flow · Servicio automatizado</div>
+    </div>
+
+    <div class="nivel-tag">Disponible desde · <span class="ph">Solo Agenda</span></div>
+  </div>
+
+  <div class="escena">
+    <div class="escena-tag">Escena 02 — Le mandas un audio mientras atiendes</div>
+    <div class="escena-texto">Estás cortando. Te acordaste de que tienes que bloquear el viernes en la tarde. En vez de detenerte y tipear, le mandas un audio a tu Agente: <em>«Bloquéame el viernes desde las 15»</em>. Sigue cortando. Cuando termines, ya está bloqueado y los clientes que tenías agendados están siendo reagendados — sin que tú hayas escrito nada más.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px;">
+
+      <!-- Lado dueño -->
+      <div>
+        <div style="font-family: 'DM Mono', monospace; color: var(--petrol); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">Tú · dueño</div>
+        <div class="chat" style="max-width: 100%;">
+          <div class="chat-header">
+            <div class="chat-avatar">DU</div>
+            <div class="chat-header-info">
+              <div class="chat-header-name">Tú (dueño)</div>
+              <div class="chat-header-sub">14:22</div>
+            </div>
+          </div>
+          <div class="bubble bubble-user">🎤 Audio · 0:08</div>
+          <div class="bubble bubble-bot">Ok, bloqueo el viernes desde las 15:00. Tienes 3 citas afectadas: Pedro, María y Juan. Empiezo a reagendarlas y te aviso.</div>
+          <div class="bubble bubble-bot">Listo: Pedro lunes 16:00, María quedó en lista de espera, Juan sábado 11:00. Te aviso cuando cambien algo.</div>
+          <div class="chat-tag">Operaria Flow · Servicio automatizado</div>
+        </div>
+      </div>
+
+      <!-- Lado cliente -->
+      <div>
+        <div style="font-family: 'DM Mono', monospace; color: var(--petrol); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">Cliente · María</div>
+        <div class="chat" style="max-width: 100%;">
+          <div class="chat-header">
+            <div class="chat-avatar">MA</div>
+            <div class="chat-header-info">
+              <div class="chat-header-name">María Soto</div>
+              <div class="chat-header-sub">14:23</div>
+            </div>
+          </div>
+          <div class="bubble bubble-bot">Hola María. Tu cita del viernes 15:30 con Felipe no podrá realizarse. Te puedo ofrecer:<br>· Lunes 16:00<br>· Martes 11:00<br>O quedas en lista de espera para el primer cupo.</div>
+          <div class="bubble bubble-user">Lista de espera mejor</div>
+          <div class="bubble bubble-bot">Anotado, María. Te aviso apenas se libere un cupo cercano a tu horario habitual.</div>
+          <div class="chat-tag">Operaria Flow · Servicio automatizado</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nivel-tag">Disponible desde · <span class="ph">Agenda + Operación</span></div>
+  </div>
+
+  <div class="escena">
+    <div class="escena-tag">Escena 03 — El cierre que se cierra solo</div>
+    <div class="escena-texto">Termina tu día sin cuadrar nada. El último cliente sale, ya pagó por link, la boleta se emitió sola. A las <span class="ph">{{21:00}}</span> te llega tu cierre al WhatsApp: cuánto entró, cuántas citas atendiste, quiénes quedan pendientes. Respondes con los números de los que pagaron en efectivo y listo. <em>Caja cuadrada en 30 segundos.</em></div>
+
+    <div class="chat">
+      <div class="chat-header">
+        <div class="chat-avatar">OF</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Tu <em>Agente Flow</em></div>
+          <div class="chat-header-sub">Cierre 21:00</div>
+        </div>
+      </div>
+      <div class="bubble bubble-bot">Cierre de hoy ·  12 citas atendidas<br>Cobrado por bot: $180.000<br>Pendientes (3):<br>1. Juan · corte · $12.000<br>2. María · color · $35.000<br>3. Pedro · barba · $8.000<br><br>¿Quiénes pagaron en efectivo?</div>
+      <div class="bubble bubble-user">1 y 3</div>
+      <div class="bubble bubble-bot">Listo. Cobrado total hoy: $200.000. Pendiente: María $35.000. ¿Le recuerdo mañana?</div>
+      <div class="chat-tag">Operaria Flow · Servicio automatizado</div>
+    </div>
+
+    <div class="nivel-tag">Disponible desde · <span class="ph">BarberIA360°</span></div>
+  </div>
+
+  <!-- ============ SECCIÓN 3 ============ -->
+  <h1>3. El producto y sus entradas</h1>
+
+  <div class="producto-destacado">
+    <div class="producto-tag">El paquete completo</div>
+    <h3>BarberIA360°</h3>
+    <p class="producto-claim">Los 9 bloques activos. Tu <em>Agente Flow</em> al máximo de skills.</p>
+    <div class="producto-pricing">Setup CLP 180.000 (único) · MRR CLP 90.000 / mes</div>
+  </div>
+
+  <p>Si quieres empezar más liviano, puedes tomar una entrada parcial y subir cuando lo necesites. <strong>El upgrade entre entradas no cobra setup adicional</strong> — solo cambia el MRR.</p>
+
+  <!-- ENTRADA 1 -->
+  <div class="entrada">
+    <div class="entrada-titulo">Solo Agenda</div>
+    <div class="entrada-claim">El primer encendido</div>
+    <div class="entrada-pricing">Setup CLP 60.000 · MRR CLP 45.000 / mes</div>
+    <div class="entrada-desc">Tu <em>Agente Flow</em> agenda, recuerda y confirma tus citas por WhatsApp, Instagram o Messenger. Tu calendario siempre al día sin que lo abras.</div>
+
+    <ul>
+      <li>Recepción 24/7 multi-canal.</li>
+      <li>Tu Agente entiende lenguaje natural en texto.</li>
+      <li>Consulta en tiempo real de tu agenda real (respeta tus bloqueos).</li>
+      <li>Agendamiento automático con confirmación al cliente.</li>
+      <li>Recordatorio automático 24h antes de la cita.</li>
+      <li>Detección de Oportunidades desde el mes 3 (Anexo PDF mensual + avisos por WhatsApp cuando detecta algo crítico).</li>
+    </ul>
+
+    <div class="entrada-impacto">Impacto: cero citas perdidas por demora en responder.</div>
+  </div>
+
+  <!-- ENTRADA 2 -->
+  <div class="entrada">
+    <div class="entrada-titulo">Agenda + Operación <span style="color: var(--teal);">+ AUDIOS</span></div>
+    <div class="entrada-claim">Tu día gestionado por WhatsApp</div>
+    <div class="entrada-pricing">Setup CLP 120.000 · MRR CLP 60.000 / mes <span style="color: var(--muted);">· upgrade desde Solo Agenda sin setup adicional</span></div>
+    <div class="entrada-desc">Sumas todo lo de Solo Agenda + comandos del dueño por WhatsApp + lista de espera + cierre nocturno con conciliación de efectivo. Y tu Agente <strong>entiende audios</strong> — útil cuando estás atendiendo y no quieres tipear.</div>
+
+    <ul>
+      <li>Comandos por WhatsApp en texto o <strong>audio</strong>: <em>«bloquéame el jueves tarde»</em>, <em>«cancela a Juan»</em>, <em>«qué tengo mañana»</em>.</li>
+      <li>Cancelaciones inteligentes: bloquea el horario, contacta a los afectados, ofrece reagendar o lista de espera.</li>
+      <li>Lista de espera automática: si no hay slot, el cliente queda registrado y se le avisa cuando se libera uno.</li>
+      <li>Cierre nocturno por WhatsApp a la hora que tú elijas: te llega el resumen del día, concilias efectivo respondiendo "1, 3, 5", caja cuadrada.</li>
+      <li>Comandos de cobranza: <em>«marca pagado a Juan»</em>, <em>«cobra a María»</em>, <em>«perdona a Pedro»</em>.</li>
+    </ul>
+
+    <div class="entrada-impacto">Impacto: gestión completa del negocio sin abrir paneles. El día empieza y termina en tu WhatsApp.</div>
+  </div>
+
+  <!-- ENTRADA 3 = PAQUETE COMPLETO -->
+  <div class="entrada" style="border-top-color: var(--navy); border-top-width: 6px;">
+    <div class="entrada-titulo">BarberIA360° <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: var(--teal); letter-spacing: 1px; vertical-align: middle;">+ COBRO + REPORTES + VISIÓN</span></div>
+    <div class="entrada-claim">El ciclo cerrado · paquete completo</div>
+    <div class="entrada-pricing">Setup CLP 180.000 · MRR CLP 90.000 / mes <span style="color: var(--muted);">· upgrade desde Operación sin setup adicional</span></div>
+    <div class="entrada-desc">Sumas todo lo anterior + cobro digital + boleta automática + Google Review + reportería mensual con métricas accionables. Y tu Agente <strong>procesa fotos de comprobantes</strong> automáticamente.</div>
+
+    <ul>
+      <li>Link de pago vía <strong>tu pasarela actual</strong> (Transbank, MercadoPago, Flow, Khipu o Getnet). Tu Agente la conecta sin que cambies nada de lo que ya usas. <strong>El dinero llega directo a tu cuenta</strong> — Operaria es passthrough técnico, no toca ni custodia tu dinero en ningún momento.</li>
+      <li>Boleta electrónica automática al confirmarse el pago.</li>
+      <li>Mensaje 2 horas post-cita combinando: agradecimiento + Google Review + link de pago digital pendiente y recordatorio para agendar su próxima hora.</li>
+      <li><strong>Procesamiento de comprobantes:</strong> el cliente manda foto del comprobante, tu Agente lee monto, fecha y receptor, y confirma el pago automáticamente.</li>
+      <li>Informe mensual: PDF al WhatsApp el primer día del mes con métricas operativas, financieras y de comportamiento de clientes (ver Anexo).</li>
+      <li>Dashboard accesible con un click cuando quieras profundizar.</li>
+      <li>Resumen narrativo del mes generado por IA con la lectura ejecutiva de los datos.</li>
+    </ul>
+
+    <div class="entrada-impacto">Impacto: dejas de perseguir cobros, dejas de cuadrar a mano, dejas de adivinar cómo va el mes. El ciclo entero, cerrado y visible.</div>
+  </div>
+
+  <p class="claim">Setup se cobra una sola vez, al firmar el contrato. Si subes de entrada después, no pagas setup nuevo — solo cambia tu MRR.</p>
+
+  <!-- BLOQUE TRANSVERSAL: DETECCIÓN DE OPORTUNIDADES -->
+  <div class="agente-star" style="background: linear-gradient(135deg, var(--petrol) 0%, var(--teal) 100%); margin-top: 32px;">
+    <div class="agente-tag">Bonus desde el mes 3 · en cualquier entrada</div>
+    <h3>Detección de Oportunidades</h3>
+    <p class="agente-desc">A partir del tercer mes, tu <em>Agente Flow</em> ya tiene suficiente data acumulada de tu negocio para identificar patrones que tú no ves mientras estás atendiendo. Cada mes te llega un PDF al WhatsApp con oportunidades concretas y accionables: clientes que dejaron de venir, horarios subutilizados, servicios que crecen, candidatos a fidelización, mejoras de precio.</p>
+    <p class="agente-desc" style="margin-top: 14px;"><strong>Llega junto al informe mensual del primer día del mes</strong>, en un anexo dedicado. Es inteligencia operativa que tendrías que sacar abriendo planillas — y te llega resuelta. Disponible en los 3 niveles desde el mes 3.</p>
+  </div>
+
+  <!-- ============ SECCIÓN 4 ============ -->
+  <h1>4. Cómo funciona en tu día a día</h1>
+  <p>Recorrido típico de un cliente, desde que escribe hasta que termina su atención:</p>
+
+  <table>
+    <tbody>
+      <tr><td class="col-num">1</td><td><span class="step-title">El cliente escribe (texto, audio o imagen) por WhatsApp</span> <span class="step-desc">— Tu Agente interpreta el mensaje en segundos.</span></td></tr>
+      <tr><td class="col-num">2</td><td><span class="step-title">Pregunta al cliente qué día y hora le acomoda</span> <span class="step-desc">— Si tiene flexibilidad o no sabe, le ofrece hasta 3 alternativas cercanas o le envía un link/imagen con disponibilidad de la semana.</span></td></tr>
+      <tr><td class="col-num">3</td><td><span class="step-title">El cliente elige y confirma</span> <span class="step-desc">— La cita queda agendada. El evento aparece en tu calendario.</span></td></tr>
+      <tr><td class="col-num">4</td><td><span class="step-title">24 horas antes, recordatorio</span> <span class="step-desc">— El cliente recibe mensaje de confirmación. Si no puede, se le ofrece reagendar.</span></td></tr>
+      <tr><td class="col-num">5</td><td><span class="step-title">El cliente asiste</span> <span class="step-desc">— Tú haces lo tuyo: atender, trabajar, conversar.</span></td></tr>
+      <tr><td class="col-num">6</td><td><span class="step-title">Se gestiona el cobro</span> <span class="step-desc">— El sistema envía link de pago, confirma la transacción y emite boleta. Si el cliente paga por transferencia y manda foto, el Agente la procesa.</span></td></tr>
+      <tr><td class="col-num">7</td><td><span class="step-title">Cierre nocturno automático</span> <span class="step-desc">— Resumen del día al WhatsApp con todo lo que entró + conciliación de efectivo en 30 segundos.</span></td></tr>
+      <tr><td class="col-num">8</td><td><span class="step-title">Informe mensual</span> <span class="step-desc">— El primer día del mes recibes el PDF con métricas operativas, financieras y de comportamiento de clientes.</span></td></tr>
+    </tbody>
+  </table>
+
+  <p class="claim">Todo esto ocurre sin que tengas que responder mensajes, confirmar citas ni cuadrar cifras.</p>
+
+  <!-- ============ SECCIÓN 5 ============ -->
+  <h1>5. Qué cambia para ti</h1>
+
+  <table>
+    <thead><tr><th>Situación</th><th>Sin Operaria</th><th>Con BarberIA360°</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="col-label">Cliente escribe fuera de horario</td>
+        <td>El mensaje queda sin responder. Muchos no vuelven a escribir.</td>
+        <td>Tu Agente responde en segundos, agenda y confirma. El cliente está atendido aunque estés durmiendo.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Confirmar citas del día</td>
+        <td>Llamas o escribes uno por uno. Si olvidas alguno, aparece como no-show.</td>
+        <td>Recordatorio automático 24h antes a cada cliente.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Bloquear una tarde y reagendar</td>
+        <td>Entras al panel, bloqueas, contactas uno por uno, pierdes media hora.</td>
+        <td>Le mandas un audio o texto al Agente: bloquea, reagenda, deja en espera. Te llega el resumen.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cliente paga por transferencia</td>
+        <td>Te manda foto del comprobante. Abres cada una, verificas monto y receptor, confirmas a mano.</td>
+        <td>Tu Agente lee la imagen, extrae los datos y confirma el pago automáticamente.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cobrar al final del servicio</td>
+        <td>A veces olvidas cobrar o el cliente dice «te transfiero después».</td>
+        <td>El sistema envía link de pago vía tu pasarela actual + Google Review en un solo mensaje. El que paga, paga.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cuadrar caja al final del día</td>
+        <td>Boletas, transferencias, efectivo, cuadrar a mano. 20 minutos perdidos.</td>
+        <td>Cierre por WhatsApp, respondes "1, 3, 5", caja cuadrada en 30 segundos.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Saber cómo cerró el mes</td>
+        <td>Abres planillas y boletas. O no lo haces y operas a ciegas.</td>
+        <td>PDF al WhatsApp el primer día del mes con todas las métricas. Click al dashboard si quieres profundizar.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Tu tiempo como dueño</td>
+        <td>3 a 5 horas diarias en coordinación, confirmaciones y caja.</td>
+        <td>Te dedicas a atender y a hacer crecer tu negocio.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="claim" style="text-align: center; font-size: 22px; line-height: 1.5; margin: 32px 0; color: var(--navy); font-weight: 600;">El resultado no es más tecnología: es tiempo operativo recuperado.</p>
+
+  <!-- ============ SECCIÓN 6 (NUEVA) ============ -->
+  <h1>6. Roles del sistema · quién ve qué</h1>
+  <p>Si en tu local atiende más de un profesional, tu <em>Agente Flow</em> reconoce tres roles distintos. Cada uno ve y recibe solo lo que le corresponde — sin ruido de notificaciones cruzadas y sin que un staff vea las citas o cobros de otro.</p>
+
+  <table>
+    <thead>
+      <tr><th>Rol</th><th>Qué puede hacer</th><th>Qué notificaciones recibe</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-label">Dueño</td>
+        <td>Visibilidad consolidada del local. Puede ver y modificar la agenda de cualquier staff, cobrar cualquier cita, gestionar reglas globales.</td>
+        <td>Cierre nocturno consolidado del local entero · cambios de agenda de todos los staff · alertas operacionales · informe mensual · oportunidades detectadas.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Staff (barbero, estilista)</td>
+        <td>Solo su agenda. Modifica sus citas, marca pagados, se bloquea, ve su lista de espera. No ve los cobros ni la agenda de sus pares.</td>
+        <td>Sus propias citas · sus pagos pendientes · sus cambios de agenda. <strong>No</strong> recibe cierres globales ni movimientos de otros.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cliente final</td>
+        <td>Agenda, confirma, cancela, paga su propia cita.</td>
+        <td>Su confirmación · recordatorio 24h · link de pago · solicitud de review · próxima cita.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="claim">Si trabajas solo, todo se simplifica: tú eres dueño y staff a la vez. Si tienes equipo, cada uno opera tranquilo en su slice y tú ves el local entero.</p>
+
+  <!-- ============ SECCIÓN 7 ============ -->
+  <h1>7. Pricing y márgenes claros</h1>
+  <table>
+    <thead>
+      <tr><th>Entrada</th><th>Setup (CLP, único)</th><th>MRR (CLP/mes)</th><th>Para quién</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-label">Solo Agenda</td>
+        <td>CLP 60.000</td>
+        <td>CLP 45.000</td>
+        <td>Profesionales y negocios pequeños con agenda. El primer encendido.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Agenda + Operación</td>
+        <td>CLP 120.000</td>
+        <td>CLP 60.000</td>
+        <td>Negocios con dueño activo gestionando staff, horarios y lista de espera.</td>
+      </tr>
+      <tr>
+        <td class="col-label" style="color: var(--teal);">BarberIA360° (paquete completo)</td>
+        <td>CLP 180.000</td>
+        <td>CLP 90.000</td>
+        <td>Negocios maduros que cobran online y quieren cerrar el ciclo con métricas mensuales.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="data-block">
+    <div class="data-line">Setup → cobrado al firmar el contrato. Financia los días 1-7 de implementación de tu Agente.</div>
+    <div class="data-line">MRR → tarjeta autorizada al firmar. Primer cargo el día 5 del mes siguiente al setup, recurrente cada día 5.</div>
+    <div class="data-line">Upgrade entre entradas → solo cambia el MRR. Setup ya pagado al inicio.</div>
+    <div class="data-line">Cobro a tus clientes → vía tu pasarela actual (Transbank, MP, Flow, Khipu, Getnet).</div>
+    <div class="data-line">Pasarela B4 → Operaria es passthrough técnico. El dinero llega directo a tu cuenta vía tu pasarela. <strong>Operaria nunca toca ni custodia tu dinero.</strong></div>
+    <div class="data-line">Cancelación → con 30 días de aviso, sin penalización.</div>
+  </div>
+
+  <!-- ============ SECCIÓN 8 — MANUAL DE USO ============ -->
+  <h1>8. Manual de uso de tu <em>Agente Flow</em></h1>
+  <p>Desde que encendemos tu operación, y en adelante, siempre vas a seguir los mismos pasos:</p>
+
+  <div class="pasos-manual">
+    <ol>
+      <li>Abre tu WhatsApp.</li>
+      <li>Busca a tu <em>Agente Flow</em>.</li>
+      <li>Escríbele lo que necesites (texto o audio).</li>
+    </ol>
+  </div>
+
+  <h3>Lo que puedes pedirle según los bloques contratados</h3>
+  <table>
+    <thead>
+      <tr><th>Necesidad</th><th>Disponible desde</th><th>Cómo funciona</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-label">Que tu Agente agende a tus clientes</td>
+        <td>Agenda / Operación / 360</td>
+        <td>Agenda, recuerda y confirma tus citas. El cliente escribe a tu WhatsApp y la cita queda lista sin que intervengas.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Saber qué tienes en la agenda sin abrir el calendario</td>
+        <td>Agenda / Operación / 360</td>
+        <td>Escríbele y pregúntale directo: <em>«¿qué tengo el miércoles?»</em>, <em>«¿quién viene mañana?»</em>. Te responde al toque.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Ver tu calendario de la semana</td>
+        <td>Agenda / Operación / 360</td>
+        <td>Escríbele <em>«muéstrame el calendario de esta semana»</em>. Te manda el link directo o una imagen con la vista de la semana. <strong>Olvídate de recordar links — pídeselo a tu Agente.</strong></td>
+      </tr>
+      <tr>
+        <td class="col-label">Mandarle audios en lugar de tipear</td>
+        <td>Operación / 360</td>
+        <td>Tu Agente entiende audios. Le mandas un audio diciendo lo que necesitas y lo procesa igual que un texto. Útil cuando estás atendiendo.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cancelar o bloquear una tarde de tu agenda</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«bloquéame el jueves en la tarde»</em>. Bloquea, reagenda a tus clientes citados, o si no es posible los deja en lista de espera.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Gestionar espacios vacíos y horas canceladas</td>
+        <td>Operación / 360</td>
+        <td><strong>No necesitas ni escribirle.</strong> Sin preguntar gestiona los clientes que estén en espera en cuanto vea una hora cancelada o disponible en las siguientes 48 horas.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cobrar a los clientes que se les olvida pagar</td>
+        <td><span style="color: var(--accent, #2E7D32); font-weight: 700; font-size: 15px;">BarberIA360°</span></td>
+        <td>No necesitas hacer nada. Tu Agente envía el link de pago + Google Review y le ofrece su siguiente cita.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Verificar transferencias por foto del comprobante</td>
+        <td><span style="color: var(--accent, #2E7D32); font-weight: 700; font-size: 15px;">BarberIA360°</span></td>
+        <td>El cliente manda foto del comprobante por WhatsApp. Tu Agente lee la imagen, extrae monto, fecha y receptor, y confirma el pago.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Emitir boleta automáticamente</td>
+        <td><span style="color: var(--accent, #2E7D32); font-weight: 700; font-size: 15px;">BarberIA360°</span></td>
+        <td>Cuando el cliente paga vía tu pasarela, tu Agente envía el comprobante automático. Si tienes facturador SII (OpenFactura, Bsale, Haulmer), también la boleta SII oficial. Si no tienes facturador, te orientamos en la elección.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cierre de caja diario sin perder tiempo</td>
+        <td>Operación / 360</td>
+        <td>A la hora que tú definas, tu Agente te envía el cierre por WhatsApp. Respondes quién pagó en efectivo y listo. <em>Caja cuadrada en 30 segundos.</em></td>
+      </tr>
+      <tr>
+        <td class="col-label">Saber cómo está funcionando tu negocio cada mes</td>
+        <td><span style="color: var(--accent, #2E7D32); font-weight: 700; font-size: 15px;">BarberIA360°</span></td>
+        <td>Día 1 de cada mes te llega un PDF al WhatsApp con todas las métricas. Si quieres profundizar, click al dashboard en vivo.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Ver pagos pendientes</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«cuánto pendiente»</em> y te lista los clientes con monto y desde cuándo deben.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Marcar a un cliente como pagado</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«marca pagado a Juan»</em> y queda registrado.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Pedirle que cobre a alguien</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«cobra a María»</em> y le envía recordatorio amable al cliente.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Perdonar una deuda</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«perdona a Pedro»</em> y sale de pendientes sin afectar tu cierre.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Cambiar la hora del cierre nocturno</td>
+        <td>Operación / 360</td>
+        <td>Escríbele <em>«cambia cierre a 23:30»</em> y queda configurado.</td>
+      </tr>
+      <tr>
+        <td class="col-label">Detectar oportunidades de mejora</td>
+        <td>Cualquier entrada (mes 3+)</td>
+        <td>Cada mes recibes un Anexo PDF junto al informe mensual con oportunidades concretas (clientes inactivos, horarios subutilizados, servicios que crecen, candidatos a fidelización). Y si detecta algo crítico antes, te avisa por WhatsApp en el momento.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="claim">Una sola regla: habla con tu WhatsApp y pídele lo que necesites como quieras. Tu Agente entiende lenguaje natural — no hay comandos rígidos, no hay menús.</p>
+
+  <!-- ============ SECCIÓN 9 ============ -->
+  <h1>9. Qué necesitamos de tu parte</h1>
+  <p>Para poner en marcha tu BarberIA360°, completas una encuesta corta en línea con la información operativa de tu negocio. La respondes a tu ritmo, desde el teléfono o el computador, y al enviar recibes un reporte por correo en PDF.</p>
+
+  <table>
+    <thead><tr><th>Información</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Datos básicos del negocio</td><td>Nombre, dirección, contacto, horarios generales.</td></tr>
+      <tr><td class="col-label">Catálogo de servicios</td><td>Nombre, duración y precio de cada servicio.</td></tr>
+      <tr><td class="col-label">Equipo</td><td>Quiénes atienden, especialidades, horarios.</td></tr>
+      <tr><td class="col-label">Pagos y reglas</td><td>Medios de pago aceptados, hora de cierre nocturno preferida, políticas de cancelación.</td></tr>
+      <tr><td class="col-label">Voz y tono del negocio</td><td>Cómo hablas con tus clientes (tú/usted, frases típicas, tono general).</td></tr>
+      <tr><td class="col-label">Acceso técnico</td><td>WhatsApp Business y cuenta de Google. <strong>Si no tienes alguna, no te preocupes — la creamos por ti.</strong> Usamos Google Calendar como agenda y Google Drive como respaldo de tus cierres diarios.</td></tr>
+      <tr><td class="col-label">Acceso del contador (opcional)</td><td>Si quieres que tu contador tenga acceso directo al documento de respaldo de cierres diarios en tu Google Drive, indícanos su correo en la encuesta y lo configuramos.</td></tr>
+      <tr><td class="col-label">Entrada deseada</td><td>Con cuál entrada partes (Solo Agenda / Agenda + Operación / BarberIA360° completo).</td></tr>
+    </tbody>
+  </table>
+
+  <p class="claim">No necesitas cambiar ninguna herramienta ni descargar aplicaciones nuevas. Trabajamos sobre lo que ya tienes.</p>
+
+  <div class="data-block">
+    <div class="data-line" style="font-family: 'Syne', sans-serif; font-size: 15px; color: var(--navy); font-weight: 600; margin-bottom: 8px;">Cómo completar la encuesta</div>
+    <div class="data-line">1. Abre el link: <span class="ph">{{https://agente.operaria.cl/barber/[slug-cliente]}}</span></div>
+    <div class="data-line">2. Responde con el máximo detalle de tu operación.</div>
+    <div class="data-line">3. Al enviar, recibes el reporte en PDF en tu correo.</div>
+  </div>
+
+  <!-- ============ SECCIÓN 10 ============ -->
+  <h1>10. Calendario de implementación</h1>
+
+  <table>
+    <thead><tr><th>#</th><th>Etapa</th><th>Descripción</th><th>Duración</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="col-num">1</td>
+        <td class="col-label">Levantamiento</td>
+        <td>Respondes la encuesta con tu información operativa. Recibes el reporte en PDF por correo.</td>
+        <td class="col-duration">Día 0</td>
+      </tr>
+      <tr>
+        <td class="col-num">2</td>
+        <td class="col-label">Análisis y Propuesta de Cierre</td>
+        <td>Procesamos tu información y te enviamos la <strong>Propuesta de Cierre</strong>: mensajes tipo de tu Agente personalizados a tu negocio, alcance contratado, contrato y enlace para activar tu tarjeta.</td>
+        <td class="col-duration">Día 1-2</td>
+      </tr>
+      <tr>
+        <td class="col-num">3</td>
+        <td class="col-label">Firma de contrato + cobro setup</td>
+        <td>Firmas digitalmente la Propuesta de Cierre. <strong>En el mismo evento</strong> se cobra el setup de la entrada contratada y se autoriza tu tarjeta para el MRR. Aquí parte el trabajo de implementación de Operaria.</td>
+        <td class="col-duration">Mismo día propuesta</td>
+      </tr>
+      <tr>
+        <td class="col-num">4</td>
+        <td class="col-label">Implementación técnica</td>
+        <td>Configuramos tu línea Operaria, conectamos tu agenda y medios de pago, parametrizamos tu Agente con tu voz y tus reglas.</td>
+        <td class="col-duration">Días 3-7 desde la firma</td>
+      </tr>
+      <tr>
+        <td class="col-num">5</td>
+        <td class="col-label">Activación</td>
+        <td>Los bloques contratados quedan activos en tu número de WhatsApp. Probamos juntos el flujo completo. <strong>No hay cobro asociado a esta etapa</strong> — el setup ya se cobró al firmar.</td>
+        <td class="col-duration">Día 7</td>
+      </tr>
+      <tr>
+        <td class="col-num">6</td>
+        <td class="col-label">Primer MRR</td>
+        <td>El primer cargo de la suscripción mensual se hace el <strong>día 5 del mes siguiente</strong> al setup. Desde ahí, recurrente cada día 5.</td>
+        <td class="col-duration">Día 5 mes siguiente</td>
+      </tr>
+      <tr>
+        <td class="col-num">7</td>
+        <td class="col-label">Acompañamiento</td>
+        <td>Revisión las primeras semanas, ajustes del Agente según tu operación real. <strong>Soporte WhatsApp con respuesta en 24h hábiles (lun-vie)</strong>. Roadmap a respuesta en 1h hábil en las próximas 8-12 semanas, a medida que automatizamos los tickets recurrentes.</td>
+        <td class="col-duration">Continuo</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="claim">De la encuesta a la operación encendida en una semana desde la firma.</p>
+
+  <!-- ============ SECCIÓN 11 ============ -->
+  <h1>11. Próximo paso</h1>
+  <p>Si quieres arrancar, el camino es directo:</p>
+
+  <table>
+    <tbody>
+      <tr><td class="col-num">1</td><td><span class="step-title">Completa la encuesta de levantamiento</span> <span class="step-desc">— Link: <span class="ph">{{https://agente.operaria.cl/barber/[slug-cliente]}}</span>. La respondes a tu ritmo desde el teléfono o el computador.</span></td></tr>
+      <tr><td class="col-num">2</td><td><span class="step-title">Recibes la Propuesta de Cierre</span> <span class="step-desc">— Personalizada con tus datos, mensajes tipo de tu Agente, contrato y enlace para activar tu tarjeta.</span></td></tr>
+      <tr><td class="col-num">3</td><td><span class="step-title">Firmas y se cobra el setup</span> <span class="step-desc">— Al firmar la Propuesta de Cierre se cobra el setup y se autoriza tu tarjeta. Aquí arranca la implementación.</span></td></tr>
+      <tr><td class="col-num">4</td><td><span class="step-title">En 7 días tu operación está encendida</span> <span class="step-desc">— Implementación técnica de días 3-7. Activación al día 7. Sin que cambies de software ni descargues nada.</span></td></tr>
+      <tr><td class="col-num">5</td><td><span class="step-title">Primer MRR el día 5 del mes siguiente</span> <span class="step-desc">— No se cobra en la activación. Recurrente cada día 5.</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="closing">
+    <p class="mission">¡Listos para devolverte tu tiempo!</p>
+  </div>
+
+  <div class="contact">
+    <h3>Contacto</h3>
+    <div class="data-block">
+      <div class="data-line">Francisco Muñoz — Operaria</div>
+      <div class="data-line">franciscomunoz@operaria.cl</div>
+      <div class="data-line">operaria.cl</div>
+    </div>
+  </div>
+
+  <!-- ============ ANEXO ============ -->
+  <div class="anexo-titulo">Anexo · Informe mensual · 360 métricas de tu operación</div>
+
+  <p style="margin-top: 24px;">El informe mensual se entrega como PDF por WhatsApp el primer día del mes con enlace al dashboard. Las métricas se organizan en tres capas:</p>
+
+  <h2>Capa operativa</h2>
+  <table>
+    <thead><tr><th>Métrica</th><th>Por qué te importa</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Citas agendadas</td><td>Volumen efectivo de operación del mes.</td></tr>
+      <tr><td class="col-label">Tasa de confirmación</td><td>Cuántos clientes confirman vs los que se ofrecen, mide fricción del proceso.</td></tr>
+      <tr><td class="col-label">Tasa de no-show</td><td>Pérdida real por inasistencia.</td></tr>
+      <tr><td class="col-label">Tiempo promedio de agendamiento</td><td>Velocidad de respuesta percibida por tu cliente.</td></tr>
+      <tr><td class="col-label">Citas fuera de horario laboral</td><td>Lo que antes se perdía porque no respondías. Hoy entra solo.</td></tr>
+      <tr><td class="col-label">Tiempo operativo recuperado</td><td>Las horas que dejaste de gastar coordinando.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Capa financiera</h2>
+  <table>
+    <thead><tr><th>Métrica</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Ingresos cobrados vía Agente</td><td>Cash visible mes contra mes.</td></tr>
+      <tr><td class="col-label">Ticket promedio</td><td>Entender el mix de servicios contratados.</td></tr>
+      <tr><td class="col-label">Pagos pendientes al cierre del mes</td><td>Cobranza necesaria para el próximo mes.</td></tr>
+      <tr><td class="col-label">% cobrado online vs presencial</td><td>Madurez digital del negocio.</td></tr>
+      <tr><td class="col-label">Comisiones de tu pasarela del mes</td><td>Transparencia de costos transaccionales.</td></tr>
+      <tr><td class="col-label">Proyección mes siguiente</td><td>Citas ya agendadas × ticket promedio. Visibilidad de pipeline.</td></tr>
+      <tr><td class="col-label">Total efectivo conciliado</td><td>Cuadre real de caja vs cobros digitales.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Capa de comportamiento de clientes</h2>
+  <table>
+    <thead><tr><th>Métrica</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Clientes únicos atendidos</td><td>Tamaño real de tu base activa.</td></tr>
+      <tr><td class="col-label">Recurrentes vs nuevos</td><td>Salud de retención del negocio.</td></tr>
+      <tr><td class="col-label">Top 10 clientes por frecuencia</td><td>Foco para acciones de fidelización.</td></tr>
+      <tr><td class="col-label">Servicios más vendidos</td><td>Inventario y foco operativo.</td></tr>
+      <tr><td class="col-label">Día y hora pico</td><td>Optimización de agenda y staff.</td></tr>
+      <tr><td class="col-label">Clientes inactivos 60+ días</td><td>Lista lista para campaña de reactivación.</td></tr>
+      <tr><td class="col-label">Origen del cliente (canal)</td><td>WhatsApp, Instagram o Messenger según por dónde llegó. Optimizar marketing por canal.</td></tr>
+    </tbody>
+  </table>
+
+  <p class="claim" style="margin-top: 24px;">Resumen narrativo IA: al inicio del PDF un párrafo ejecutivo de 4-6 líneas con la lectura del mes. Es lo primero que lees.</p>
+
+  <!-- ============ SEGUNDO ANEXO ============ -->
+  <div class="anexo-titulo">Anexo · Informe de Detección de Oportunidades</div>
+
+  <p style="margin-top: 24px;">A partir del tercer mes de operación, junto al informe mensual te llega un Anexo PDF con las oportunidades detectadas por tu <em>Agente Flow</em> durante el mes. <strong>Disponible en los 3 niveles</strong> desde el mes 3.</p>
+
+  <p>Tu Agente cruza datos de tu operación (citas, clientes, servicios, horarios, ingresos) e identifica patrones que tú no ves mientras estás atendiendo. Cada oportunidad llega con datos concretos, recomendación accionable y, cuando aplica, una acción que puedes pedirle ejecutar respondiendo al WhatsApp.</p>
+
+  <h2>Tipos de oportunidades que detecta</h2>
+
+  <h3>Reactivación de clientes</h3>
+  <table>
+    <thead><tr><th>Patrón</th><th>Ejemplo del aviso</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Clientes inactivos</td><td>"Pedro Soto y Luis Cárdenas no han venido en 90 días, antes venían cada 4 semanas. Candidatos a reactivación."</td></tr>
+      <tr><td class="col-label">Clientes con caída de frecuencia</td><td>"Juan Pérez pasó de venir cada 3 semanas a cada 6. ¿Algo cambió?"</td></tr>
+      <tr><td class="col-label">Nuevos sin segunda visita</td><td>"15 clientes nuevos del mes pasado no volvieron. Conversión actual: 40% (mes anterior 55%)."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Optimización de agenda</h3>
+  <table>
+    <thead><tr><th>Patrón</th><th>Ejemplo del aviso</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Horarios subutilizados</td><td>"Miércoles 9-11 ocupación 22%. Sábado 11-13 ocupación 98%. Posible redistribución."</td></tr>
+      <tr><td class="col-label">Días con saturación</td><td>"Sábados rechazaste 12 solicitudes este mes por falta de cupos. Pérdida estimada: $144.000."</td></tr>
+      <tr><td class="col-label">Cancelaciones recurrentes</td><td>"Tu tasa de no-show subió de 8% a 14% este mes. 3 clientes concentraron 60% de los no-shows."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Servicios y precios</h3>
+  <table>
+    <thead><tr><th>Patrón</th><th>Ejemplo del aviso</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Servicios que crecen</td><td>"Barbas subieron 40% mes a mes. ¿Quieres destacar el servicio en respuestas a clientes nuevos?"</td></tr>
+      <tr><td class="col-label">Servicios que decrecen</td><td>"Coloraciones bajaron 22% en los últimos 60 días."</td></tr>
+      <tr><td class="col-label">Combinaciones frecuentes</td><td>"El 38% de quienes piden corte también piden barba. ¿Empaquetamos como combo?"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fidelización</h3>
+  <table>
+    <thead><tr><th>Patrón</th><th>Ejemplo del aviso</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Candidatos VIP</td><td>"María Soto subió de $25.000 a $45.000 promedio en 2 meses. 6 visitas el último trimestre. Candidata a programa fidelización."</td></tr>
+      <tr><td class="col-label">Clientes en riesgo</td><td>"Carlos Rojas (cliente top trimestre pasado) lleva 45 días sin venir. Recomendación: contacto personal."</td></tr>
+      <tr><td class="col-label">Clientes referidores</td><td>"Detectamos 3 clientes nuevos que mencionaron ser recomendados por Diego González."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Operación y staff</h3>
+  <table>
+    <thead><tr><th>Patrón</th><th>Ejemplo del aviso</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">Carga desbalanceada</td><td>"Felipe atendió 80 citas, Alan 32 este mes. Diferencia mayor que el mes anterior."</td></tr>
+      <tr><td class="col-label">Atrasos en cadena</td><td>"12 días este mes la cita de las 18:00 empezó después de las 18:15. Si declaras 30 min por corte y agendas cada 30, la 6ª cita del día arranca con 25 min de retraso. ¿Espaciamos a 35 min?"</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Cómo se entrega</h2>
+  <table>
+    <thead><tr><th>Componente</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td class="col-label">PDF mensual</td><td>Llega junto al informe mensual el primer día del mes, desde el mes 3 de operación.</td></tr>
+      <tr><td class="col-label">Avisos WhatsApp</td><td>Si tu Agente detecta algo crítico antes de fin de mes (ej: tasa de no-show subiendo de golpe), te avisa al instante por WhatsApp con la recomendación.</td></tr>
+      <tr><td class="col-label">Acción directa</td><td>Cuando aplica, puedes responder el WhatsApp con una orden y tu Agente ejecuta. Ej: "Manda mensaje de reactivación a los inactivos" → tu Agente arma el mensaje, lo envía y registra respuestas.</td></tr>
+    </tbody>
+  </table>
+
+  <p class="claim" style="margin-top: 24px;">Inteligencia operativa que tendrías que sacar abriendo planillas — te llega resuelta y accionable cada mes.</p>
+
+</div>
+</div>
+
+<script>
+  // Reemplazo de placeholders desde URL: ?nombre=&empresa=&ciudad=&fecha=&mes=
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const nombre  = params.get('nombre')  || params.get('cliente') || '';
+    const empresa = params.get('empresa') || params.get('negocio') || '';
+    const ciudad  = params.get('ciudad')  || '';
+    const fecha   = params.get('fecha')   || '';
+    const mes     = params.get('mes')     || '';
+    const map = {
+      'Nombre del negocio': empresa,
+      'Nombre del dueño': nombre,
+      'Nombre dueño': nombre,
+      'Nombre': nombre,
+      'Diego González': nombre,
+      'Ciudad': ciudad,
+      'DD/MM/AAAA': fecha,
+      'Mes-Año': mes
+    };
+    const root = document.getElementById('doc') || document.body;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    let n;
+    while ((n = walker.nextNode())) {
+      if (n.nodeValue.indexOf('{{') === -1) continue;
+      n.nodeValue = n.nodeValue.replace(/\{\{([^}]+)\}\}/g, function (m, k) {
+        const v = map[k.trim()];
+        return (v != null && v !== '') ? v : m;
+      });
+    }
+    if (empresa) document.title = 'Propuesta · ' + empresa;
+  })();
+
+  const ORIGINAL_HTML = document.getElementById('doc').innerHTML;
+
+  function copyFinal() {
+    const doc = document.getElementById('doc');
+    const range = document.createRange();
+    range.selectNodeContents(doc);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    try {
+      document.execCommand('copy');
+      selection.removeAllRanges();
+      alert('Texto final copiado al portapapeles.');
+    } catch (e) {
+      alert('No se pudo copiar. Selecciona y copia manualmente.');
+    }
+  }
+
+  function undoAll() {
+    if (confirm('¿Deshacer TODOS los cambios y volver al original?')) {
+      document.getElementById('doc').innerHTML = ORIGINAL_HTML;
+    }
+  }
+</script>
+
+</body>
+</html>

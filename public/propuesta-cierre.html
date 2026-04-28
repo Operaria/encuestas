@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Propuesta de Cierre — BarberIA360° v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0F1E3A;
+    --petrol: #1B4D4A;
+    --teal: #4A9B93;
+    --offwhite: #F2F0EB;
+    --muted: #9E9C96;
+    --body: #3D4450;
+    --border: #D6D2CB;
+    --row-odd: #FAFAF8;
+    --row-even: #F2F0EB;
+    --chat-user: #D9F2C4;
+    --highlight: #FFF5CC;
+    --action-green: #2E7D32;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--offwhite);
+    color: var(--body);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .controls {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    display: flex;
+    gap: 6px;
+    z-index: 1000;
+  }
+  .controls button {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .controls button.undo { background: var(--petrol); }
+  .controls button:hover { opacity: 0.88; }
+
+  .header {
+    background: var(--navy);
+    color: #fff;
+    padding: 60px 60px 36px;
+  }
+  .header .crumbs {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-size: 38px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    letter-spacing: -0.4px;
+  }
+  .header h1 .grados { color: var(--teal); }
+  .header .doc-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .header .meta {
+    margin-top: 24px;
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(74,155,147,0.3);
+    padding-top: 18px;
+  }
+  .header .meta-item { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .header .meta-item .label {
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 10px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .header .meta-item .value { color: #fff; }
+
+  .content { max-width: 880px; margin: 0 auto; padding: 50px 60px 80px; }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--teal);
+  }
+  h2:first-child { margin-top: 0; }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--petrol);
+    margin: 22px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  p { margin: 10px 0 14px; }
+
+  ul { padding-left: 22px; margin: 10px 0 18px; }
+  ul li { margin: 4px 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 14px; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 10px 14px; font-weight: 600; font-size: 12px; }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(odd) td { background: var(--row-odd); }
+  tr:nth-child(even) td { background: var(--row-even); }
+  td.label { font-weight: 600; color: var(--navy); width: 240px; }
+
+  .ph {
+    background: var(--highlight);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.92em;
+    color: var(--navy);
+  }
+
+  .claim-box {
+    background: var(--highlight);
+    border-left: 4px solid var(--teal);
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-style: italic;
+    color: var(--navy);
+  }
+
+  .impacto-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0 8px;
+  }
+  .impacto-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--petrol) 100%);
+    color: #fff;
+    padding: 22px 20px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .impacto-card .impacto-numero {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    color: var(--teal);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .impacto-card .impacto-label { color: #d8dfee; font-size: 13px; line-height: 1.4; }
+
+  .mockup-wrapper {
+    background: var(--row-odd);
+    padding: 18px;
+    border-radius: 6px;
+    margin: 14px 0;
+    border: 1px solid var(--border);
+  }
+  .mockup-wrapper .mockup-tag {
+    font-family: 'DM Mono', monospace;
+    color: var(--petrol);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .mockup-chat {
+    background: var(--offwhite);
+    border-radius: 8px;
+    padding: 14px 12px;
+    max-width: 380px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+  }
+  .mockup-header {
+    background: var(--petrol);
+    color: #fff;
+    margin: -14px -12px 12px;
+    padding: 11px 14px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mockup-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .mockup-name { font-weight: 700; font-size: 13px; line-height: 1.2; }
+  .mockup-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--teal); }
+  .bubble {
+    padding: 9px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--navy);
+    max-width: 85%;
+    line-height: 1.5;
+  }
+  .bubble-bot { background: #fff; border: 1px solid var(--border); }
+  .bubble-user { background: var(--chat-user); margin-left: auto; }
+
+  .mensajes-tabla td:nth-child(2) {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    color: var(--navy);
+    line-height: 1.5;
+  }
+
+  .pricing-destacado {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--petrol) 100%);
+    color: #fff;
+    padding: 26px 30px;
+    border-radius: 6px;
+    margin: 18px 0;
+  }
+  .pricing-destacado h3 { color: var(--teal); margin-top: 0; }
+  .pricing-destacado .pricing-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(74,155,147,0.3);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+  }
+  .pricing-destacado .pricing-line:last-child { border-bottom: none; }
+  .pricing-destacado .pricing-line .pricing-label { color: #d8dfee; }
+  .pricing-destacado .pricing-line .pricing-value { color: #fff; font-weight: 700; }
+  .pricing-destacado .pricing-total {
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 2px solid var(--teal);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pricing-destacado .pricing-total .pricing-label {
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .pricing-destacado .pricing-total .pricing-value {
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+  }
+
+  .upgrade-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--teal);
+    padding: 18px 22px;
+    margin: 18px 0;
+    border-radius: 4px;
+  }
+  .upgrade-card h3 {
+    color: var(--navy);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 16px;
+    margin-top: 0;
+  }
+
+  .accion-firma {
+    background: #fff;
+    border: 2px solid var(--teal);
+    border-radius: 8px;
+    padding: 28px 30px;
+    margin: 28px 0;
+  }
+  .accion-firma h3 {
+    color: var(--navy);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 20px;
+    margin-top: 0;
+  }
+  .firma-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 18px 0;
+  }
+  .firma-fields .field-block { display: flex; flex-direction: column; }
+  .firma-fields .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--petrol);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .firma-fields .field-input {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    background: var(--row-odd);
+  }
+  .firma-checkbox {
+    margin: 14px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .firma-checkbox input { margin-top: 4px; }
+  .acciones-botones {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .btn-firmar, .btn-pagar {
+    flex: 1;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  .btn-firmar { background: var(--navy); color: #fff; }
+  .btn-firmar:hover { background: var(--petrol); }
+  .btn-pagar { background: var(--action-green); color: #fff; }
+  .btn-pagar:hover { opacity: 0.9; }
+  .btn-pagar:disabled, .btn-firmar:disabled {
+    background: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .estado-firma {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--highlight);
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--navy);
+    display: none;
+  }
+  .estado-firma.visible { display: block; }
+
+  [contenteditable="true"]:focus {
+    outline: 2px dashed var(--teal);
+    outline-offset: 2px;
+    background: rgba(74,155,147,0.04);
+  }
+  [contenteditable="true"]:hover { background: rgba(74,155,147,0.02); }
+
+  @media print {
+    body { background: #fff; }
+    .controls { display: none; }
+    .header { padding: 30px 40px; }
+    .content { padding: 30px 40px; }
+    .acciones-botones { display: none; }
+    [contenteditable="true"]:focus,
+    [contenteditable="true"]:hover { outline: none; background: transparent; }
+  }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button onclick="copyFinal()">Copiar texto final</button>
+  <button class="undo" onclick="undoAll()">Deshacer todos los cambios</button>
+</div>
+
+<div id="doc">
+
+<div class="header" contenteditable="true">
+  <div class="crumbs">Operaria · Operaria Flow · BarberIA360°</div>
+  <div class="doc-tag">Propuesta de cierre · v3</div>
+  <h1>Listo para encender tu operación, <span class="ph">{{Nombre dueño}}</span></h1>
+  <div class="meta">
+    <div class="meta-item"><span class="label">Negocio</span><span class="value ph">{{Nombre del negocio}}</span></div>
+    <div class="meta-item"><span class="label">Entrada contratada</span><span class="value ph">{{BarberIA360° / Solo Agenda / Agenda+Operación}}</span></div>
+    <div class="meta-item"><span class="label">Fecha</span><span class="value ph">{{DD/MM/AAAA}}</span></div>
+    <div class="meta-item"><span class="label">Documento</span><span class="value">Propuesta de Cierre v3</span></div>
+  </div>
+</div>
+
+<div class="content" contenteditable="true">
+
+<!-- 1. RESUMEN PERSONALIZADO -->
+<h2>1. Esto es lo que vas a tener</h2>
+<p>Procesamos tu encuesta de levantamiento. Esta propuesta aterriza la información que nos diste a la operación real que vamos a encender en tu negocio. Tu Agente se va a llamar <span class="ph">{{Nombre del Agente}}</span>, va a hablar como tú y va a operar dentro del WhatsApp Business que ya tienes activo.</p>
+
+<table>
+  <tbody>
+    <tr><td class="label">Negocio</td><td><span class="ph">{{Nombre del negocio}}</span></td></tr>
+    <tr><td class="label">Servicios principales</td><td><span class="ph">{{Lista servicios con duración y precio CLP}}</span></td></tr>
+    <tr><td class="label">Equipo</td><td><span class="ph">{{Profesionales y horarios}}</span></td></tr>
+    <tr><td class="label">Horario operativo</td><td><span class="ph">{{Lun-Sáb 10:00–20:00 · colación 13:00–14:00}}</span></td></tr>
+    <tr><td class="label">Hora de cierre nocturno</td><td><span class="ph">{{21:00}}</span></td></tr>
+    <tr><td class="label">Modos de cobro</td><td><span class="ph">{{Tarjeta + transferencia + efectivo}}</span></td></tr>
+    <tr><td class="label">Voz de tu Agente</td><td><span class="ph">{{Tutea, usa "amigo" como muletilla, tono cercano}}</span></td></tr>
+    <tr><td class="label">Canales activos</td><td><span class="ph">{{WhatsApp Business +56 X XXXX XXXX}}</span></td></tr>
+  </tbody>
+</table>
+
+<!-- 2. QUÉ NECESITAMOS DE TU PARTE -->
+<h2>2. Qué necesitamos de tu parte</h2>
+<p>Operaria provee toda la infraestructura técnica: configuramos tu Agente, gestionamos la verificación con Meta, creamos el Calendar dedicado y dejamos los respaldos en Google Drive. Tú solo necesitas tres cosas:</p>
+<ul>
+  <li>Firmar el contrato (sección 10)</li>
+  <li>Autorizar la suscripción mensual (queda en pausa hasta activación)</li>
+  <li>Compartirnos el catálogo completo de servicios en setup técnico</li>
+</ul>
+
+<!-- 3. IMPACTO PROYECTADO -->
+<h2>3. Tu impacto proyectado</h2>
+<p>Con los datos que nos entregaste, calculamos lo que tu <em>Agente <span class="ph">{{Nombre del Agente}}</span></em> va a moverte el primer mes de operación. Estos números son estimaciones conservadoras basadas en tu volumen real declarado.</p>
+
+<div class="impacto-grid">
+  <div class="impacto-card">
+    <div class="impacto-numero ph">{{X hrs/día}}</div>
+    <div class="impacto-label">Tiempo operativo recuperado · vuelves a la tijera, no al teclado</div>
+  </div>
+  <div class="impacto-card">
+    <div class="impacto-numero ph">{{Y citas/mes}}</div>
+    <div class="impacto-label">Citas que dejas de perder por no responder a tiempo</div>
+  </div>
+  <div class="impacto-card">
+    <div class="impacto-numero ph">{{CLP Z}}</div>
+    <div class="impacto-label">Ingresos recuperados al mes · piso conservador</div>
+  </div>
+</div>
+
+<p class="claim-box">Estos números son piso, no techo. A partir del mes 3, tu <strong>Anexo de Detección de Oportunidades</strong> empieza a llegarte con palancas concretas: clientes que dejaron de venir, horas de la semana subutilizadas, candidatos a fidelización. Cada mes el Agente entiende mejor tu negocio.</p>
+
+<!-- 4. MENSAJES TIPO -->
+<h2>4. Así te va a hablar tu <em>Agente <span class="ph">{{Nombre}}</span></em></h2>
+<p>Estos son los mensajes parametrizados con la voz de <span class="ph">{{Nombre del negocio}}</span>. Te mostramos los más representativos como ejemplos de chat. El resto está en la tabla al final de esta sección.</p>
+
+<div class="mockup-wrapper">
+  <div class="mockup-tag">Cliente nuevo · agenda mientras estás trabajando</div>
+  <div class="mockup-chat">
+    <div class="mockup-header">
+      <div class="mockup-avatar">DG</div>
+      <div>
+        <div class="mockup-name ph">{{Diego González}}</div>
+        <div class="mockup-sub">Cliente nuevo · 13:40</div>
+      </div>
+    </div>
+    <div class="bubble bubble-user">Hola, ¿tienes hora mañana para corte?</div>
+    <div class="bubble bubble-bot ph">{{Saludo cliente nuevo con voz del negocio}}</div>
+    <div class="bubble bubble-user">Cualquiera, idealmente entre 10 y 12.</div>
+    <div class="bubble bubble-bot">Perfecto. Mañana entre 10 y 12 tengo <span class="ph">{{10:30 o 11:30}}</span>. ¿Cuál te acomoda?</div>
+    <div class="bubble bubble-user">10:30 está bien</div>
+    <div class="bubble bubble-bot ph">{{Confirmación con voz del negocio + servicio + precio}}</div>
+  </div>
+</div>
+
+<div class="mockup-wrapper">
+  <div class="mockup-tag">Cierre nocturno · caja cuadrada en 30 segundos</div>
+  <div class="mockup-chat">
+    <div class="mockup-header">
+      <div class="mockup-avatar">OF</div>
+      <div>
+        <div class="mockup-name">Tu <em>Agente <span class="ph">{{Nombre}}</span></em></div>
+        <div class="mockup-sub">Cierre · <span class="ph">{{21:00}}</span></div>
+      </div>
+    </div>
+    <div class="bubble bubble-bot">Cierre de hoy · <span class="ph">{{12}}</span> citas atendidas<br>Pendientes (<span class="ph">{{3}}</span>):<br>1. Juan · corte · CLP 7.000<br>2. María · color · CLP 35.000<br>3. Pedro · barba · CLP 8.000<br><br>¿Quiénes pagaron en efectivo?</div>
+    <div class="bubble bubble-user">1 y 3</div>
+    <div class="bubble bubble-bot">Listo. Cobrado total hoy: <span class="ph">{{CLP 200.000}}</span>. Pendiente: María CLP 35.000. ¿Le recuerdo mañana?</div>
+  </div>
+</div>
+
+<div class="mockup-wrapper">
+  <div class="mockup-tag">Mensaje 2h post-cita · agradecimiento + review (BarberIA360° completo)</div>
+  <div class="mockup-chat">
+    <div class="mockup-header">
+      <div class="mockup-avatar">OF</div>
+      <div>
+        <div class="mockup-name">Tu <em>Agente <span class="ph">{{Nombre}}</span></em></div>
+        <div class="mockup-sub">Mensaje automático · 2h post-cita</div>
+      </div>
+    </div>
+    <div class="bubble bubble-bot ph">{{Saludo post-cita con voz del negocio}}</div>
+    <div class="bubble bubble-bot">Si quieres calificarnos en Google: <span class="ph">{{link Google Review}}</span></div>
+    <div class="bubble bubble-bot">Si prefieres cerrar el pago desde el celular: <span class="ph">{{link de pago vía pasarela del comerciante}}</span></div>
+    <div class="bubble bubble-bot">¿Quieres dejar agendada tu próxima visita? Tengo disponibilidad <span class="ph">{{fecha sugerida}}</span>.</div>
+  </div>
+</div>
+
+<p style="margin-top: 14px; font-size: 13px; color: var(--petrol);"><strong>Sobre el reagendamiento:</strong> tu Agente <strong>siempre confirma con cada cliente antes de mover su hora</strong>. Nunca reagenda a alguien sin avisarle primero.</p>
+
+<h3>El resto de los mensajes según tus bloques contratados</h3>
+<table class="mensajes-tabla">
+  <thead>
+    <tr><th>Momento</th><th>Mensaje del <em>Agente</em></th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="label">Recordatorio 24h antes</td><td><span class="ph">{{Mensaje recordatorio 24h con voz del negocio}}</span></td></tr>
+    <tr><td class="label">Recordatorio 2h antes</td><td><span class="ph">{{Mensaje recordatorio 2h con voz del negocio}}</span></td></tr>
+    <tr><td class="label">Sin disponibilidad → lista de espera</td><td><span class="ph">{{Mensaje lista espera con voz del negocio}}</span></td></tr>
+    <tr><td class="label">Aviso cuando se libera cupo</td><td><span class="ph">{{Mensaje aviso cupo con voz del negocio}}</span></td></tr>
+    <tr><td class="label">Cancelación cliente</td><td><span class="ph">{{Mensaje cancelación con voz del negocio}}</span></td></tr>
+    <tr><td class="label">Comando dueño · consulta agenda</td><td>Tu <span class="ph">{{día}}</span>: <span class="ph">{{N}}</span> citas. <span class="ph">{{Lista hora · cliente · servicio}}</span></td></tr>
+    <tr><td class="label">Detección de oportunidad crítica (en línea)</td><td><span class="ph">{{Aviso oportunidad detectada}}</span></td></tr>
+    <tr><td class="label">Anexo Oportunidades · día 1 cada mes (desde mes 3)</td><td><span class="ph">{{Mensaje entrega Anexo Oportunidades con voz del negocio}}</span></td></tr>
+  </tbody>
+</table>
+
+<p class="claim-box">Toda la voz, los nombres y las frases pueden ajustarse después de la activación. Tu Agente aprende de cómo le respondes y mejora cada mes.</p>
+
+<!-- 5. INFORMES -->
+<h2>5. Lo que vas a recibir cada día y cada mes</h2>
+
+<h3>Cierre nocturno · todos los días a las <span class="ph">{{21:00}}</span></h3>
+<p>WhatsApp con citas atendidas, lista de pendientes, conciliación de efectivo y transferencia. Tú respondes quién pagó cómo (texto o audio) y cierras tu caja en 30 segundos sin abrir nada.</p>
+
+<h3>Respaldo permanente · Google Sheets <em>Cierres 360</em></h3>
+<p>Una pestaña por mes (formato <span class="ph">{{Mes-Año}}</span>) que se llena cada día con tu cierre conciliado. <span class="ph">{{Configuramos acceso de lectura para tu contador en email@dominio.cl}}</span></p>
+
+<h3>Anexo Detección de Oportunidades · desde el mes 3</h3>
+<p>PDF mensual el día 1 con datos concretos del mes anterior: <strong>clientes inactivos a reactivar, horarios subutilizados, servicios que crecen, candidatos a fidelización</strong>. Y si el Agente detecta algo crítico antes de fin de mes, te avisa por WhatsApp en el momento.</p>
+
+<h3>Informe Mensual con dashboard <span class="ph">{{solo BarberIA360° · si aplica}}</span></h3>
+<p>PDF mensual al WhatsApp el día 1 con resumen ejecutivo IA + métricas operativas, financieras y de comportamiento. Acceso al dashboard en vivo en <em>metricas.operaria.cl</em>.</p>
+
+<!-- 6. ACTIVACIÓN -->
+<h2>6. Cuándo arranca tu Agente</h2>
+<p>Tu Agente queda vivo en producción <strong>una vez completada la verificación Meta Business Manager</strong>. Operaria gestiona la verificación contigo de extremo a extremo. La conexión queda 100% oficial vía WhatsApp Cloud API desde el primer mensaje.</p>
+<p><strong>Tiempo de verificación:</strong> entre 2 y 21 días desde la firma. Te avisamos por WhatsApp en cuanto se complete.</p>
+<p style="font-size: 13px; color: var(--petrol);"><em>Operaria mantiene estándar de calidad: solo cobramos cuando la operación está oficialmente blindada.</em></p>
+
+<!-- 7. CALENDARIO -->
+<h2>7. Calendario de activación</h2>
+<table>
+  <thead>
+    <tr><th>Día</th><th>Etapa</th><th>Qué pasa</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="label">Hoy · Día 0</td><td>Firma + autorización suscripción</td><td>Firmas esta propuesta y autorizas la suscripción MRR. <strong>No se cobra nada hoy.</strong></td></tr>
+    <tr><td class="label">Día 1-2</td><td>Conexión de cuentas</td><td>Te enviamos el <strong>Anexo de Conexión y Credenciales</strong>. Lo gestionamos contigo por WhatsApp.</td></tr>
+    <tr><td class="label">Día 3-7</td><td>Implementación técnica</td><td>Configuramos tu Agente con tu voz, tus servicios, tu agenda y tus reglas. <span class="ph">{{Si aplica: migramos tu sistema actual a Google Calendar limpio}}</span>.</td></tr>
+    <tr><td class="label">Entre días 2 y 21</td><td>Activación + cobro setup</td><td>Tu Agente arranca cuando se cierra la verificación Meta y se cobra el setup ese mismo día.</td></tr>
+    <tr><td class="label">Día 5 del mes siguiente al setup</td><td>Cobro automático MRR</td><td>Cobro recurrente del MRR cada día 5. Sin que tengas que hacer nada.</td></tr>
+    <tr><td class="label">Mes 3 en adelante</td><td>Anexo Oportunidades</td><td>PDF mensual con oportunidades + avisos sueltos por WhatsApp si detecta algo crítico.</td></tr>
+  </tbody>
+</table>
+
+<!-- 8. PRICING -->
+<h2>8. Tu pricing</h2>
+<div class="pricing-destacado">
+  <h3>Resumen económico</h3>
+  <div class="pricing-line"><span class="pricing-label">Entrada contratada</span><span class="pricing-value ph">{{Solo Agenda / Agenda+Operación / BarberIA360°}}</span></div>
+  <div class="pricing-line"><span class="pricing-label">Bloques activos</span><span class="pricing-value ph">{{B1 + B2 + B3 + ...}}</span></div>
+  <div class="pricing-line"><span class="pricing-label">Setup único</span><span class="pricing-value ph">{{CLP 60.000 / 120.000 / 180.000}} · al activar</span></div>
+  <div class="pricing-line"><span class="pricing-label">MRR mensual</span><span class="pricing-value ph">{{CLP 45.000 / 60.000 / 90.000}} · cada día 5</span></div>
+  <div class="pricing-total">
+    <span class="pricing-label">Cobro al firmar hoy</span>
+    <span class="pricing-value">CLP 0</span>
+  </div>
+</div>
+<p><strong>Cómo se cobra:</strong> firmas hoy y autorizas la suscripción MRR. <strong>No se cobra nada al firmar.</strong> El setup se cobra el día que tu Agente queda vivo (al cerrarse la verificación Meta). El MRR se cobra cada día 5 a partir del mes siguiente al setup.</p>
+
+<h3 style="margin-top: 22px;">Si más adelante quieres más</h3>
+<div class="upgrade-card">
+  <h3>Upgrade entre entradas · sin setup adicional</h3>
+  <p>Si en algún momento quieres sumar más bloques, el upgrade entre niveles solo cambia tu MRR a partir del mes siguiente. <strong>Sin setup adicional.</strong></p>
+  <table style="margin-top: 12px;">
+    <thead><tr><th>De → A</th><th>MRR cambia a</th><th>Suma</th></tr></thead>
+    <tbody>
+      <tr><td>Solo Agenda → Agenda+Operación</td><td>CLP 45.000 → CLP 60.000</td><td>Cierre nocturno + comandos dueño + audios + lista de espera</td></tr>
+      <tr><td>Agenda+Operación → BarberIA360°</td><td>CLP 60.000 → CLP 90.000</td><td>Cobro digital + comprobantes por foto + boleta SII + informe mensual con dashboard</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-bottom: 0; font-size: 13px; color: var(--muted);"><em>Esto es información, no presión. Tú decides cuándo y si lo activas.</em></p>
+</div>
+
+<!-- 9. CONDICIONES -->
+<h2>9. Condiciones del servicio</h2>
+<ul>
+  <li><strong>Vigencia:</strong> mensual con renovación automática. Puedes cancelar cuando quieras dando aviso por escrito (WhatsApp comercial cuenta como aviso) con 15 días de anticipación.</li>
+  <li><strong>Cambio de entrada:</strong> el upgrade entre niveles (Solo Agenda → Agenda+Operación → BarberIA360°) no cobra setup adicional. Solo cambia el MRR a partir del mes siguiente.</li>
+  <li><strong>Soporte hoy:</strong> WhatsApp comercial Operaria. Tiempo de respuesta: <strong>24 horas hábiles</strong> (lunes a viernes 9:00–19:00).</li>
+  <li><strong>Soporte futuro (próximas 8-12 semanas):</strong> Operaria está construyendo un equipo de soporte especializado de respuesta rápida. Cuando esté operativo, el SLA bajará a <strong>1 hora hábil</strong> para todos los clientes activos sin costo adicional.</li>
+  <li><strong>Datos:</strong> Operaria custodia los datos operativos del negocio y los respalda. Tú conservas la propiedad de tu información. En caso de cancelación, recibes export completo de Google Sheets <em>Cierres 360</em>.</li>
+  <li><strong>Cobro al cliente final:</strong> en niveles Solo Agenda y Agenda+Operación, el cobro al cliente final se hace en el local con efectivo o transferencia. Solo en BarberIA360° tu Agente genera links de pago digital y procesa comprobantes.</li>
+  <li><strong>Pasarela de pago (BarberIA360°):</strong> Operaria opera como passthrough. Conectamos la pasarela que ya usas (Transbank, MercadoPago, Flow, Khipu o Getnet). El dinero del cliente final llega directo a tu cuenta de la pasarela. Operaria nunca toca esos fondos.</li>
+  <li><strong>Boleta SII (BarberIA360°):</strong> si declaraste tener facturador electrónico (OpenFactura, Bsale, Haulmer u otro) lo integramos durante el setup técnico para que la boleta SII se emita automática. Si no tienes facturador, solo emitimos comprobante de pasarela y te orientamos.</li>
+  <li><strong>Verificación Meta:</strong> activación al cerrarse la verificación Meta Business Manager (2-21 días desde firma).</li>
+  <li><strong>SLA Uptime:</strong> objetivo de uptime 99% mensual (porcentaje del tiempo en que el servicio está operativo y respondiendo). Si hay caída superior a 24h consecutivas, descuento proporcional del MRR del mes.</li>
+  <li><strong>Confidencialidad:</strong> ambas partes mantienen confidencialidad sobre información comercial y operativa intercambiada.</li>
+</ul>
+
+<h3 style="margin-top: 22px;">Ley aplicable y resolución de controversias</h3>
+<p style="font-size: 13.5px;">Este contrato se rige por las leyes de la República de Chile, en particular las disposiciones del Código Civil sobre contratos de servicios, la Ley 19.628 sobre Protección de Datos Personales y la Ley 19.799 sobre firma electrónica. Cualquier controversia, diferencia o reclamación que surja del presente contrato será resuelta en primera instancia mediante negociación directa entre las partes durante 30 días. Si no se logra acuerdo, las partes acuerdan someterse a mediación según el Centro de Arbitraje y Mediación de Santiago (CAM Santiago). Si la mediación no resuelve, las controversias se resolverán en los tribunales ordinarios de la ciudad de Santiago. Las partes renuncian a cualquier otro fuero que pudiera corresponder.</p>
+<p style="font-size: 12px; color: var(--muted); font-style: italic;">(*Pendiente actualización con artículos específicos tras revisión legal*)</p>
+
+</div>
+
+<div class="content" style="padding-top: 0;">
+<h2 style="margin-top: 20px;">10. Firma y autorización</h2>
+
+<div class="accion-firma">
+  <h3>Aceptación digital</h3>
+  <p>Al firmar este documento aceptas las condiciones descritas, autorizas la suscripción MRR <span class="ph">{{CLP X}}</span> cada día 5 del mes y validas que Operaria active el cobro del setup el día que tu Agente quede vivo.</p>
+
+  <div class="firma-fields">
+    <div class="field-block">
+      <label class="field-label">Nombre completo</label>
+      <input type="text" class="field-input" id="nombre-firma" placeholder="Tu nombre completo">
+    </div>
+    <div class="field-block">
+      <label class="field-label">RUT</label>
+      <input type="text" class="field-input" id="rut-firma" placeholder="12.345.678-9">
+    </div>
+    <div class="field-block">
+      <label class="field-label">Email</label>
+      <input type="email" class="field-input" id="email-firma" placeholder="tu@email.cl">
+    </div>
+    <div class="field-block">
+      <label class="field-label">Teléfono / WhatsApp</label>
+      <input type="text" class="field-input" id="tel-firma" placeholder="+56 9 ...">
+    </div>
+  </div>
+
+  <div class="firma-checkbox">
+    <input type="checkbox" id="acepto-condiciones">
+    <label for="acepto-condiciones">He leído y acepto las condiciones del servicio descritas en este documento. Autorizo la firma electrónica simple y la suscripción MRR.</label>
+  </div>
+
+  <div class="acciones-botones">
+    <button class="btn-firmar" id="btn-firmar" onclick="firmarYContinuar()">Firmar digitalmente</button>
+    <button class="btn-pagar" id="btn-pagar" onclick="irAPago()" disabled>Continuar al registro de tarjeta</button>
+  </div>
+
+  <div class="estado-firma" id="estado-firma"></div>
+</div>
+
+<p style="margin-top: 30px; color: var(--muted); font-size: 12px; font-style: italic;">
+Documento generado automáticamente desde tu encuesta de levantamiento. Si necesitas ajustes, escríbenos por WhatsApp antes de firmar.<br>
+Operaria · Operaria Flow · BarberIA360° v3 · contacto: franciscomunoz@operaria.cl
+</p>
+
+</div>
+
+</div>
+
+<script>
+  // Reemplazo de placeholders desde URL: ?nombre=&empresa=&ciudad=&fecha=&mes=
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const nombre  = params.get('nombre')  || params.get('cliente') || '';
+    const empresa = params.get('empresa') || params.get('negocio') || '';
+    const ciudad  = params.get('ciudad')  || '';
+    const fecha   = params.get('fecha')   || '';
+    const mes     = params.get('mes')     || '';
+    const map = {
+      'Nombre del negocio': empresa,
+      'Nombre del dueño': nombre,
+      'Nombre dueño': nombre,
+      'Nombre': nombre,
+      'Diego González': nombre,
+      'Ciudad': ciudad,
+      'DD/MM/AAAA': fecha,
+      'Mes-Año': mes
+    };
+    const root = document.getElementById('doc') || document.body;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    let n;
+    while ((n = walker.nextNode())) {
+      if (n.nodeValue.indexOf('{{') === -1) continue;
+      n.nodeValue = n.nodeValue.replace(/\{\{([^}]+)\}\}/g, function (m, k) {
+        const v = map[k.trim()];
+        return (v != null && v !== '') ? v : m;
+      });
+    }
+    if (empresa) document.title = 'Propuesta Cierre · ' + empresa;
+  })();
+
+  const ORIGINAL_HTML = document.getElementById('doc').innerHTML;
+
+  function copyFinal() {
+    const doc = document.getElementById('doc');
+    const range = document.createRange();
+    range.selectNodeContents(doc);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    try {
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      alert('Texto final copiado al portapapeles.');
+    } catch (e) {
+      alert('No se pudo copiar. Selecciona y copia manualmente.');
+    }
+  }
+
+  function undoAll() {
+    if (confirm('¿Deshacer TODOS los cambios y volver al original?')) {
+      document.getElementById('doc').innerHTML = ORIGINAL_HTML;
+    }
+  }
+
+  async function firmarYContinuar() {
+    const nombre = document.getElementById('nombre-firma').value.trim();
+    const rut = document.getElementById('rut-firma').value.trim();
+    const email = document.getElementById('email-firma').value.trim();
+    const tel = document.getElementById('tel-firma').value.trim();
+    const acepto = document.getElementById('acepto-condiciones').checked;
+
+    if (!nombre || !rut || !email || !tel) {
+      alert('Completa todos los campos antes de firmar.');
+      return;
+    }
+    if (!acepto) {
+      alert('Debes aceptar las condiciones para firmar.');
+      return;
+    }
+
+    let ip = 'no detectada';
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      ip = data.ip;
+    } catch (e) {}
+
+    const timestamp = new Date().toISOString();
+    const localTime = new Date().toLocaleString('es-CL', { timeZone: 'America/Santiago' });
+
+    const estado = document.getElementById('estado-firma');
+    estado.innerHTML = `<strong>Firma registrada</strong><br>
+      Nombre: ${nombre}<br>
+      RUT: ${rut}<br>
+      Email: ${email}<br>
+      Teléfono: ${tel}<br>
+      Timestamp UTC: ${timestamp}<br>
+      Hora Chile: ${localTime}<br>
+      IP: ${ip}<br>
+      Documento: Propuesta de Cierre BarberIA360° v3`;
+    estado.classList.add('visible');
+
+    document.getElementById('btn-firmar').disabled = true;
+    document.getElementById('btn-pagar').disabled = false;
+    document.getElementById('btn-pagar').focus();
+  }
+
+  function irAPago() {
+    alert('Te redirigimos a la pasarela para registrar tu tarjeta. El cobro del setup se hará el día que tu Agente quede vivo (al cerrarse la verificación Meta).\n\n[Link dinámico - generado por orquestador Cloud Run]');
+  }
+</script>
+
+</body>
+</html>
