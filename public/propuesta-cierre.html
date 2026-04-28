@@ -686,37 +686,6 @@ Operaria · Operaria Flow · BarberIA360° v3 · contacto: franciscomunoz@operar
 </div>
 
 <script>
-  // Reemplazo de placeholders desde URL: ?nombre=&empresa=&ciudad=&fecha=&mes=
-  (function () {
-    const params = new URLSearchParams(location.search);
-    const nombre  = params.get('nombre')  || params.get('cliente') || '';
-    const empresa = params.get('empresa') || params.get('negocio') || '';
-    const ciudad  = params.get('ciudad')  || '';
-    const fecha   = params.get('fecha')   || '';
-    const mes     = params.get('mes')     || '';
-    const map = {
-      'Nombre del negocio': empresa,
-      'Nombre del dueño': nombre,
-      'Nombre dueño': nombre,
-      'Nombre': nombre,
-      'Diego González': nombre,
-      'Ciudad': ciudad,
-      'DD/MM/AAAA': fecha,
-      'Mes-Año': mes
-    };
-    const root = document.getElementById('doc') || document.body;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-    let n;
-    while ((n = walker.nextNode())) {
-      if (n.nodeValue.indexOf('{{') === -1) continue;
-      n.nodeValue = n.nodeValue.replace(/\{\{([^}]+)\}\}/g, function (m, k) {
-        const v = map[k.trim()];
-        return (v != null && v !== '') ? v : m;
-      });
-    }
-    if (empresa) document.title = 'Propuesta Cierre · ' + empresa;
-  })();
-
   const ORIGINAL_HTML = document.getElementById('doc').innerHTML;
 
   function copyFinal() {
