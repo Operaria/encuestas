@@ -571,12 +571,11 @@
   <div class="brand">BarberIA<span class="grados">360°</span></div>
   <div class="subtitle">Manos a la ópera</div>
   <hr class="sep">
-  <div class="title">Propuesta para <span class="ph">{{Nombre del negocio}}</span></div>
+  <div class="title">Propuesta para <span id="ph-empresa">{{Nombre del negocio}}</span></div>
   <div class="desc">Encendemos tu operación para devolverte el tiempo</div>
   <div class="meta-line">
-    <span><span class="label">Fecha</span> <span class="value ph">{{DD/MM/AAAA}}</span></span>
-    <span><span class="label">Cliente</span> <span class="value ph">{{Nombre del dueño}}</span></span>
-    <span><span class="label">Local</span> <span class="value ph">{{Ciudad}}</span></span>
+    <span><span class="label">Cliente</span> <span class="value" id="ph-nombre">{{Nombre del dueño}}</span></span>
+    <span><span class="label">Fecha</span> <span class="value" id="ph-fecha"></span></span>
   </div>
 </div>
 
@@ -688,7 +687,7 @@
 
   <div class="escena">
     <div class="escena-tag">Escena 03 — El cierre que se cierra solo</div>
-    <div class="escena-texto">Termina tu día sin cuadrar nada. El último cliente sale, ya pagó por link, la boleta se emitió sola. A las <span class="ph">{{21:00}}</span> te llega tu cierre al WhatsApp: cuánto entró, cuántas citas atendiste, quiénes quedan pendientes. Respondes con los números de los que pagaron en efectivo y listo. <em>Caja cuadrada en 30 segundos.</em></div>
+    <div class="escena-texto">Termina tu día sin cuadrar nada. El último cliente sale, ya pagó por link, la boleta se emitió sola. A las 21:00 te llega tu cierre al WhatsApp: cuánto entró, cuántas citas atendiste, quiénes quedan pendientes. Respondes con los números de los que pagaron en efectivo y listo. <em>Caja cuadrada en 30 segundos.</em></div>
 
     <div class="chat">
       <div class="chat-header">
@@ -1052,7 +1051,7 @@
 
   <div class="data-block">
     <div class="data-line" style="font-family: 'Syne', sans-serif; font-size: 15px; color: var(--navy); font-weight: 600; margin-bottom: 8px;">Cómo completar la encuesta</div>
-    <div class="data-line">1. Abre el link: <span class="ph">{{https://agente.operaria.cl/barber/[slug-cliente]}}</span></div>
+    <div class="data-line">1. Abre el link: <a class="encuesta-link" href="#" target="_blank" rel="noopener">https://encuestas-sigma.vercel.app/barber/...</a></div>
     <div class="data-line">2. Responde con el máximo detalle de tu operación.</div>
     <div class="data-line">3. Al enviar, recibes el reporte en PDF en tu correo.</div>
   </div>
@@ -1116,7 +1115,7 @@
 
   <table>
     <tbody>
-      <tr><td class="col-num">1</td><td><span class="step-title">Completa la encuesta de levantamiento</span> <span class="step-desc">— Link: <span class="ph">{{https://agente.operaria.cl/barber/[slug-cliente]}}</span>. La respondes a tu ritmo desde el teléfono o el computador.</span></td></tr>
+      <tr><td class="col-num">1</td><td><span class="step-title">Completa la encuesta de levantamiento</span> <span class="step-desc">— Link: <a class="encuesta-link" href="#" target="_blank" rel="noopener">https://encuestas-sigma.vercel.app/barber/...</a>. La respondes a tu ritmo desde el teléfono o el computador.</span></td></tr>
       <tr><td class="col-num">2</td><td><span class="step-title">Recibes la Propuesta de Cierre</span> <span class="step-desc">— Personalizada con tus datos, mensajes tipo de tu Agente, contrato y enlace para activar tu tarjeta.</span></td></tr>
       <tr><td class="col-num">3</td><td><span class="step-title">Firmas y se cobra el setup</span> <span class="step-desc">— Al firmar la Propuesta de Cierre se cobra el setup y se autoriza tu tarjeta. Aquí arranca la implementación.</span></td></tr>
       <tr><td class="col-num">4</td><td><span class="step-title">En 7 días tu operación está encendida</span> <span class="step-desc">— Implementación técnica de días 3-7. Activación al día 7. Sin que cambies de software ni descargues nada.</span></td></tr>
@@ -1259,35 +1258,33 @@
 </div>
 
 <script>
-  // Reemplazo de placeholders desde URL: ?nombre=&empresa=&ciudad=&fecha=&mes=
+  // URL params: ?nombre=&empresa=
   (function () {
-    const params = new URLSearchParams(location.search);
+    const params  = new URLSearchParams(location.search);
     const nombre  = params.get('nombre')  || params.get('cliente') || '';
     const empresa = params.get('empresa') || params.get('negocio') || '';
-    const ciudad  = params.get('ciudad')  || '';
-    const fecha   = params.get('fecha')   || '';
-    const mes     = params.get('mes')     || '';
-    const map = {
-      'Nombre del negocio': empresa,
-      'Nombre del dueño': nombre,
-      'Nombre dueño': nombre,
-      'Nombre': nombre,
-      'Diego González': nombre,
-      'Ciudad': ciudad,
-      'DD/MM/AAAA': fecha,
-      'Mes-Año': mes
-    };
-    const root = document.getElementById('doc') || document.body;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-    let n;
-    while ((n = walker.nextNode())) {
-      if (n.nodeValue.indexOf('{{') === -1) continue;
-      n.nodeValue = n.nodeValue.replace(/\{\{([^}]+)\}\}/g, function (m, k) {
-        const v = map[k.trim()];
-        return (v != null && v !== '') ? v : m;
-      });
+
+    const slugify = (s) => (s || '').toLowerCase().normalize('NFD')
+      .replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (empresa) {
+      document.getElementById('ph-empresa').textContent = empresa;
+      document.title = 'Propuesta · ' + empresa;
     }
-    if (empresa) document.title = 'Propuesta · ' + empresa;
+    if (nombre) document.getElementById('ph-nombre').textContent = nombre;
+
+    document.getElementById('ph-fecha').textContent =
+      new Date().toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    const slugCliente = slugify(nombre || empresa || 'cliente');
+    const slugNegocio = slugify(empresa || '');
+    const encuestaUrl = 'https://encuestas-sigma.vercel.app/barber/' + slugCliente +
+      (slugNegocio ? '?negocio=' + slugNegocio : '');
+    document.querySelectorAll('.encuesta-link').forEach((a) => {
+      a.href = encuestaUrl;
+      a.textContent = encuestaUrl;
+    });
   })();
 
   const ORIGINAL_HTML = document.getElementById('doc').innerHTML;
