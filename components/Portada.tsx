@@ -28,9 +28,11 @@ export default function Portada({
   return (
     <section className="min-h-screen bg-navy flex flex-col items-center justify-center px-6 py-16 sm:px-10">
       <div className="max-w-3xl w-full flex flex-col items-center text-center">
-        <p className="font-mono text-teal text-[13px] uppercase tracking-[4px] mb-6">
-          {tagline}
-        </p>
+        {!isParaguas && (
+          <p className="font-mono text-teal text-[13px] uppercase tracking-[4px] mb-6">
+            {tagline}
+          </p>
+        )}
 
         {isParaguas ? (
           <h1
@@ -47,17 +49,23 @@ export default function Portada({
 
         {isParaguas && (
           <p className="font-mono text-teal text-[11px] uppercase tracking-[3px] mt-3">
-            Studio · Páginas web
+            {marca}
           </p>
         )}
 
         <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
 
+        {isParaguas && tagline ? (
+          <h2 className="font-display italic text-white text-[28px] sm:text-[40px] leading-tight max-w-2xl">
+            {tagline}
+          </h2>
+        ) : null}
+
         {titulo ? (
           <h2
             className={
               isParaguas
-                ? "font-display italic text-white text-[28px] sm:text-[40px] leading-tight"
+                ? "font-display italic text-white text-[28px] sm:text-[40px] leading-tight mt-6"
                 : "font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight"
             }
           >
