@@ -7,7 +7,7 @@ export const webBloques: Bloque[] = [
     subtitulo: "Cuéntanos quién eres para acompañarte con tu página web.",
     preguntas: [
       { id: "id_nombre", tipo: "texto", label: "Tu nombre", placeholder: "Ej: María Pérez" },
-      { id: "id_telefono", tipo: "tel", label: "Tu WhatsApp", hint: "Solo dígitos con código país, sin \"+\". Ej: 56912345678", placeholder: "56912345678" },
+      { id: "id_telefono", tipo: "tel", label: "Tu WhatsApp", hint: "Con el signo + y código país. Ej: +56912345678", placeholder: "+56912345678" },
       { id: "id_email", tipo: "texto", label: "Tu email", placeholder: "maria@minegocio.cl" },
       { id: "id_rol", tipo: "texto", label: "Tu rol en el proyecto", placeholder: "Fundadora, socia, encargada de comunicaciones..." },
     ],
@@ -189,7 +189,7 @@ export const webBloques: Bloque[] = [
       },
       { id: "captacion_lead_magnet", numero: "7.2", tipo: "textarea", label: "¿Ofreces algo gratis a cambio del contacto?", placeholder: "Ej: PDF, mini-curso, sesión exploratoria, guía. Si no, pon \"No\"." },
       { id: "captacion_email", numero: "7.3", tipo: "texto", label: "Email donde quieres recibir los leads", placeholder: "hola@minegocio.cl" },
-      { id: "captacion_wsp", numero: "7.4", tipo: "tel", label: "WhatsApp donde quieres recibir los leads", placeholder: "56912345678" },
+      { id: "captacion_wsp", numero: "7.4", tipo: "tel", label: "WhatsApp donde quieres recibir los leads", hint: "Con el signo + y código país. Ej: +56912345678", placeholder: "+56912345678" },
       {
         id: "captacion_email_tool",
         numero: "7.5",
@@ -286,24 +286,10 @@ export const webBloques: Bloque[] = [
     preguntas: [
       { id: "tiempo_fecha", numero: "10.1", tipo: "texto", label: "Fecha ideal de publicación", placeholder: "Ej: 15 de julio 2026" },
       { id: "tiempo_hito", numero: "10.2", tipo: "textarea", label: "¿Hay un hito asociado?", placeholder: "Lanzamiento de programa, evento, temporada..." },
-      {
-        id: "tiempo_presupuesto",
-        numero: "10.3",
-        tipo: "select",
-        label: "Rango de presupuesto disponible (CLP)",
-        opciones: [
-          "Menos de 500.000",
-          "500.000 – 1.000.000",
-          "1.000.000 – 2.500.000",
-          "2.500.000 – 5.000.000",
-          "Más de 5.000.000",
-          "Prefiero conversarlo",
-        ],
-      },
-      { id: "tiempo_contraparte", numero: "10.4", tipo: "texto", label: "¿Quién aprueba avances?", hint: "Idealmente una sola persona.", placeholder: "Nombre y rol" },
+      { id: "tiempo_contraparte", numero: "10.3", tipo: "texto", label: "¿Quién aprueba avances?", hint: "Idealmente una sola persona.", placeholder: "Nombre y rol" },
       {
         id: "tiempo_cadencia",
-        numero: "10.5",
+        numero: "10.4",
         tipo: "radio",
         label: "Frecuencia de revisión deseada",
         opciones: ["Semanal", "Cada 2 semanas", "Por hito (cuando hay algo que aprobar)"],

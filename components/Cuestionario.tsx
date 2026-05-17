@@ -161,7 +161,7 @@ export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
   const dolorBloqueId = vertical.bloques.find((b) => b.preguntas.some((p) => dolorIds.includes(p.id)))?.id;
 
   return (
-    <>
+    <div className={vertical.tema === "paraguas" ? "theme-paraguas" : undefined}>
       <Portada
         nombre={nombre}
         negocio={negocio}
@@ -171,6 +171,7 @@ export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
         marca={vertical.marca}
         tagline={vertical.tagline}
         subtitulo={vertical.subtitulo}
+        tema={vertical.tema}
       />
 
       <div ref={contenidoRef} className="bg-offwhite">
@@ -243,6 +244,6 @@ export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -14,6 +14,25 @@
 
   --font-sans: var(--font-syne);
   --font-mono: var(--font-dm-mono);
+  --font-display: var(--font-cormorant);
+}
+
+/* Operaria — Marca Paraguas (Studio, Health, etc.)
+   Override de tokens cuando una sección lleva clase .theme-paraguas */
+.theme-paraguas {
+  --color-navy: #0F1E3A;
+  --color-petrol: #2E4E48;
+  --color-teal: #5A7E73;
+  --color-offwhite: #F4F1EA;
+  --color-muted: #8A8A82;
+  --color-body: #2A2D33;
+  --color-border: #CFCAC0;
+  --color-warm: #C68B3C;
+}
+.theme-paraguas .font-display {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-weight: 300;
+  letter-spacing: 0.06em;
 }
 
 html, body {

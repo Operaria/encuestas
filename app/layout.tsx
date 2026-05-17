@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Mono } from "next/font/google";
+import { Syne, DM_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const syne = Syne({
@@ -12,7 +12,15 @@ const syne = Syne({
 const dmMono = DM_Mono({
   variable: "--font-dm-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -26,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${syne.variable} ${dmMono.variable} h-full antialiased`}>
+    <html lang="es" className={`${syne.variable} ${dmMono.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

@@ -17,6 +17,8 @@ export interface Vertical {
   subtitulo?: string;
   /** Frase de cierre al final del cuestionario. */
   cierre?: string;
+  /** Tema visual. "flow" = wordmark Syne + teal; "paraguas" = Cormorant + sage. */
+  tema?: "flow" | "paraguas";
 }
 
 export const verticals: Record<string, Vertical> = {
@@ -38,9 +40,10 @@ export const verticals: Record<string, Vertical> = {
     bloques: webBloques,
     validarAlEnviar: webValidarAlEnviar,
     marca: "Studio",
-    tagline: "¡A brillar!",
-    subtitulo: "Cuéntanos lo esencial y nos hacemos cargo del resto.",
+    tagline: "¡Encendamos tu página web!",
+    subtitulo: "Cuéntanos un poquito de ti.",
     cierre: "Listos para hacer brillar tu proyecto.",
+    tema: "paraguas",
   },
 };
 
