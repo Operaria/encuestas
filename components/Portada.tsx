@@ -56,9 +56,9 @@ export default function Portada({
         <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
 
         {isParaguas && tagline ? (
-          <h2 className="font-display italic text-white text-[28px] sm:text-[40px] leading-tight max-w-2xl">
+          <p className="font-mono text-teal text-[13px] uppercase tracking-[4px]">
             {tagline}
-          </h2>
+          </p>
         ) : null}
 
         {titulo ? (
