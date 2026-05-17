@@ -21,6 +21,7 @@ export function middleware(req: NextRequest) {
     if (
       !url.pathname.startsWith("/barber/") &&
       !url.pathname.startsWith("/web/") &&
+      !url.pathname.startsWith("/diagnostico/") &&
       !url.pathname.startsWith("/api/")
     ) {
       url.pathname = `/barber${url.pathname}`;
