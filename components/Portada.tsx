@@ -6,24 +6,36 @@ interface Props {
   fecha: string;
   onComenzar: () => void;
   titulo?: string;
+  marca?: string;
+  tagline?: string;
+  subtitulo?: string;
 }
 
-export default function Portada({ nombre, negocio, fecha, onComenzar, titulo }: Props) {
+export default function Portada({
+  nombre,
+  negocio,
+  fecha,
+  onComenzar,
+  titulo,
+  marca = "Flow",
+  tagline = "Manos a la ópera",
+  subtitulo = "Con esta información, armamos tu operación.",
+}: Props) {
   return (
     <section className="min-h-screen bg-navy flex flex-col items-center justify-center px-6 py-16 sm:px-10">
       <div className="max-w-3xl w-full flex flex-col items-center text-center">
         <p className="font-mono text-teal text-[13px] uppercase tracking-[4px] mb-6">
-          Manos a la ópera
+          {tagline}
         </p>
         <h1 className="font-sans font-extrabold text-offwhite text-[48px] sm:text-[72px] leading-none tracking-[-1px]">
-          Operaria <span className="text-teal">Flow.</span>
+          Operaria <span className="text-teal">{marca}.</span>
         </h1>
         <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
         <h2 className="font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight">
           {titulo ?? "Encuesta de Levantamiento"}
         </h2>
         <p className="text-teal text-[16px] mt-4">
-          Con esta información, armamos tu operación.
+          {subtitulo}
         </p>
 
         <div className="border-t border-petrol mt-12 pt-6 w-full flex flex-wrap justify-center gap-x-12 gap-y-4">

@@ -17,8 +17,11 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Operaria Flow · Diagnóstico",
-  description: "Encuesta de levantamiento — Operaria Flow",
+  title: {
+    default: "Operaria · Diagnóstico",
+    template: "%s · Operaria",
+  },
+  description: "Encuesta de levantamiento — Operaria",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

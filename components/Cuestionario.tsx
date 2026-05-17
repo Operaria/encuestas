@@ -168,6 +168,9 @@ export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
         fecha={fecha}
         onComenzar={comenzar}
         titulo={vertical.nombreEncuesta}
+        marca={vertical.marca}
+        tagline={vertical.tagline}
+        subtitulo={vertical.subtitulo}
       />
 
       <div ref={contenidoRef} className="bg-offwhite">
@@ -184,7 +187,7 @@ export default function Cuestionario({ cliente, negocio, verticalId }: Props) {
 
           <div className="mt-20 mb-8 py-10 border-t border-b border-teal text-center">
             <p className="italic text-navy text-[20px] font-sans">
-              ¡Listos para devolverte tu tiempo!
+              {vertical.cierre ?? "¡Listos para devolverte tu tiempo!"}
             </p>
           </div>
         </div>

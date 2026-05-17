@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Cuestionario from "@/components/Cuestionario";
 import { slugToName } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Studio",
+};
 
 export default async function WebPage({
   params,

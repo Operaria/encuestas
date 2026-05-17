@@ -4,7 +4,7 @@ export const webBloques: Bloque[] = [
   {
     id: 0,
     titulo: "Tus datos",
-    subtitulo: "Para contactarte con tu propuesta de sitio web",
+    subtitulo: "Cuéntanos quién eres para acompañarte con tu página web.",
     preguntas: [
       { id: "id_nombre", tipo: "texto", label: "Tu nombre", placeholder: "Ej: María Pérez" },
       { id: "id_telefono", tipo: "tel", label: "Tu WhatsApp", hint: "Solo dígitos con código país, sin \"+\". Ej: 56912345678", placeholder: "56912345678" },
@@ -15,7 +15,7 @@ export const webBloques: Bloque[] = [
   {
     id: 1,
     titulo: "1. Identidad del proyecto",
-    subtitulo: "Queremos entender qué es lo que vamos a poner en la web",
+    subtitulo: "Lo que tu marca dice cuando todavía no la conocen.",
     preguntas: [
       { id: "identidad_nombre", numero: "1.1", tipo: "texto", label: "Nombre oficial del proyecto o marca", placeholder: "Ej: Círculo Respira" },
       { id: "identidad_nombre_comercial", numero: "1.2", tipo: "texto", label: "Nombre comercial que usan en redes (si es distinto)", placeholder: "@circulorespira" },
@@ -40,7 +40,7 @@ export const webBloques: Bloque[] = [
   {
     id: 3,
     titulo: "3. Oferta concreta",
-    subtitulo: "Lo que la persona puede contratar o reservar",
+    subtitulo: "Lo que la persona puede llevarse al contratarte.",
     preguntas: [
       {
         id: "oferta_catalogo",
