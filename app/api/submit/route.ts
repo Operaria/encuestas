@@ -100,10 +100,14 @@ export async function POST(req: NextRequest) {
     }
 
     const resend = new Resend(apiKey);
+    const subject =
+      vertical.id === "web"
+        ? `web-${payload.cliente}-${payload.negocio ?? "sin-negocio"}`
+        : `Onboarding ${vertical.id} — ${payload.nombreFormateado}`;
     const { error } = await resend.emails.send({
       from,
       to,
-      subject: `Onboarding ${vertical.id} — ${payload.nombreFormateado}`,
+      subject,
       html: htmlBody(payload, vertical.nombreEncuesta),
       attachments: [
         {

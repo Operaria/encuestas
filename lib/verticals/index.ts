@@ -1,6 +1,7 @@
 import type { Bloque, Respuestas } from "../types";
 import { bloques as genericoBloques, BLOQUE_DOLOR_IDS } from "../preguntas";
 import { barberBloques, barberValidarAlEnviar } from "./barber";
+import { webBloques, webValidarAlEnviar } from "./web";
 
 export interface Vertical {
   id: string;
@@ -22,6 +23,12 @@ export const verticals: Record<string, Vertical> = {
     nombreEncuesta: "Levantamiento — BarberIA360°",
     bloques: barberBloques,
     validarAlEnviar: barberValidarAlEnviar,
+  },
+  web: {
+    id: "web",
+    nombreEncuesta: "Levantamiento — Sitio Web Operaria Studio",
+    bloques: webBloques,
+    validarAlEnviar: webValidarAlEnviar,
   },
 };
 

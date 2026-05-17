@@ -18,7 +18,11 @@ export function middleware(req: NextRequest) {
     if (url.pathname === "/" || url.pathname === "") {
       return NextResponse.redirect("https://operaria.cl");
     }
-    if (!url.pathname.startsWith("/barber/") && !url.pathname.startsWith("/api/")) {
+    if (
+      !url.pathname.startsWith("/barber/") &&
+      !url.pathname.startsWith("/web/") &&
+      !url.pathname.startsWith("/api/")
+    ) {
       url.pathname = `/barber${url.pathname}`;
       return NextResponse.rewrite(url);
     }
