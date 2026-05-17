@@ -4,7 +4,7 @@ export const webBloques: Bloque[] = [
   {
     id: 0,
     titulo: "Tus datos",
-    subtitulo: "Cuéntanos quién eres para acompañarte con tu página web.",
+    subtitulo: "Cuéntanos un poquito de ti.",
     preguntas: [
       { id: "id_nombre", tipo: "texto", label: "Tu nombre", placeholder: "Ej: María Pérez" },
       { id: "id_telefono", tipo: "tel", label: "Tu WhatsApp", hint: "Con el signo + y código país. Ej: +56912345678", placeholder: "+56912345678" },
@@ -20,8 +20,8 @@ export const webBloques: Bloque[] = [
       { id: "identidad_nombre", numero: "1.1", tipo: "texto", label: "Nombre oficial del proyecto o marca", placeholder: "Ej: Círculo Respira" },
       { id: "identidad_nombre_comercial", numero: "1.2", tipo: "texto", label: "Nombre comercial que usan en redes (si es distinto)", placeholder: "@circulorespira" },
       { id: "identidad_pitch", numero: "1.3", tipo: "textarea", label: "Tu proyecto en una frase", hint: "Como si lo explicaras a un desconocido en 10 segundos." },
-      { id: "identidad_historia", numero: "1.4", tipo: "textarea", label: "¿Hace cuánto existe y cómo nació?", placeholder: "Hito fundacional, motivación inicial, fecha aproximada..." },
-      { id: "identidad_proposito", numero: "1.5", tipo: "textarea", label: "Misión, visión o propósito", hint: "Si no lo tienes escrito, cuéntalo con tus palabras." },
+      { id: "identidad_historia", numero: "1.4", tipo: "textarea", label: "¿Desde cuándo existe, cómo nació, hay alguna historia relacionada?", placeholder: "Hito fundacional, motivación inicial, fecha aproximada, anécdota que lo explique..." },
+      { id: "identidad_proposito", numero: "1.5", tipo: "textarea", label: "Misión, visión o propósito", hint: "Si no lo tienes escrito, cuéntanos qué es lo que mueve a este proyecto, su razón de existir, y hacia dónde va, cuál es su mayor ambición." },
       { id: "identidad_valores", numero: "1.6", tipo: "textarea", label: "Valores que guían tu trabajo (3 a 5)", placeholder: "Ej: cuidado, comunidad, evidencia, calma..." },
       { id: "identidad_equipo", numero: "1.7", tipo: "textarea", label: "¿Quién está detrás?", hint: "Nombre, rol y bio breve de fundadores o equipo visible." },
     ],

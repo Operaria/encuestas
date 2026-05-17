@@ -53,16 +53,20 @@ export default function Portada({
 
         <hr className="border-0 border-t-[1.5px] border-teal w-[120px] my-10" />
 
-        <h2
-          className={
-            isParaguas
-              ? "font-display italic text-white text-[28px] sm:text-[40px] leading-tight"
-              : "font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight"
-          }
-        >
-          {titulo ?? "Encuesta de Levantamiento"}
-        </h2>
-        <p className="text-teal text-[16px] mt-4 max-w-xl">{subtitulo}</p>
+        {titulo ? (
+          <h2
+            className={
+              isParaguas
+                ? "font-display italic text-white text-[28px] sm:text-[40px] leading-tight"
+                : "font-sans font-bold text-white text-[28px] sm:text-[38px] leading-tight"
+            }
+          >
+            {titulo}
+          </h2>
+        ) : null}
+        {subtitulo ? (
+          <p className="text-teal text-[16px] mt-4 max-w-xl">{subtitulo}</p>
+        ) : null}
 
         <div className="border-t border-petrol mt-12 pt-6 w-full flex flex-wrap justify-center gap-x-12 gap-y-4">
           <MetaPair label="Cliente" value={nombre} />
